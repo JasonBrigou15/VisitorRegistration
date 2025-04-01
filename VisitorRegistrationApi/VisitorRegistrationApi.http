@@ -1,0 +1,6 @@
+@VisitorRegistrationApi_HostAddress = http://localhost:5195
+
+GET {{VisitorRegistrationApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
