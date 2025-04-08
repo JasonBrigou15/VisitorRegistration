@@ -36,9 +36,6 @@ namespace VisitorRegistrationData.Repositories
             .Include(c => c.Employees)
             .SingleOrDefaultAsync(c => c.Id == id);
 
-        public async Task<Company?> GetCompanyByName(string name) => await context.Companies
-            .SingleOrDefaultAsync(c => c.Name == name);
-
         public async Task UpdateCompany(Company company)
         {
             var existingCompany = await context.Companies.FindAsync(company.Id);

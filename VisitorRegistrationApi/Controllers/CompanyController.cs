@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationService;
 
@@ -11,16 +10,10 @@ namespace VisitorRegistrationApi.Controllers
     {
         private readonly CompanyService companyService;
 
-        // Validators
-        private readonly IValidator<CreateCompanyDto> createCompanyValidator;
-        private readonly IValidator<UpdateCompanyDto> updateCompanyValidator;
 
-        public CompanyController(CompanyService companyService, IValidator<CreateCompanyDto> createCompanyValidator, IValidator<UpdateCompanyDto> updateCompanyValidator)
+        public CompanyController(CompanyService companyService)
         {
             this.companyService = companyService;
-            this.createCompanyValidator = createCompanyValidator;
-            this.updateCompanyValidator = updateCompanyValidator;
-
         }
 
         [HttpGet]
@@ -28,7 +21,10 @@ namespace VisitorRegistrationApi.Controllers
         {
             var companies = await companyService.GetAllCompanies();
 
-            if (!companies.Any()) return NotFound("No companies were found");
+            if (!companies.Any())
+            {
+                return NotFound("No companies found.");
+            }
 
             return Ok(companies);
         }
@@ -36,12 +32,17 @@ namespace VisitorRegistrationApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCompanyById(int id)
         {
-            if (id == 0) 
-                return BadRequest("Invalid ID provided");
+            if (id <= 0)
+            {
+                return BadRequest("ID is not valid");
+            }
 
             var company = await companyService.GetCompanyById(id);
 
-            if (company == null) return NotFound($"Company with ID {id} was not found");
+            if (company == null)
+            {
+                return NotFound($"Company with ID {id} was not found.");
+            }
 
             return Ok(company);
         }
@@ -49,47 +50,50 @@ namespace VisitorRegistrationApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNewCompany([FromBody] CreateCompanyDto createCompanyDto)
         {
-            var validationResult = await createCompanyValidator.ValidateAsync(createCompanyDto);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+            await companyService.CreateNewCompany(createCompanyDto);
 
-            var company = createCompanyDto.CreateDtoToEntity();
-
-            await companyService.CreateNewCompany(company);
-
-            return CreatedAtAction(nameof(GetCompanyById), new { id = company.Id }, company);
+            return Ok("Company successfully created");
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyDto updateCompanyDto)
         {
-            var validationResult = await updateCompanyValidator.ValidateAsync(updateCompanyDto);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+            await companyService.UpdateCompany(updateCompanyDto);
 
-            var company = await companyService.GetCompanyById(updateCompanyDto.Id);
-
-            if (company == null)
-                return NotFound($"Company with ID {updateCompanyDto.Id} not found");
-
-            updateCompanyDto.UpdateDtoToEntity(company);
-
-            await companyService.UpdateCompany(company);
-
-            return Ok(company);
+            return Ok("Company successfully updated");
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteCompany(int id)
         {
-            if (id == 0)
-                return BadRequest("Invalid ID provided");
+            if (id <= 0)
+            {
+                return BadRequest("ID is not valid");
+            }
+
+            var company = await companyService.GetCompanyById(id);
+
+            if (company == null)
+            {
+                return NotFound($"Company with ID {id} was not found.");
+            }
+
+            if (company.IsDeleted)
+                return BadRequest("This company is already deleted");
 
             await companyService.DeleteCompany(id);
 
-            return Ok("Company succesfully removed");
+            return NoContent();
         }
     }
 }

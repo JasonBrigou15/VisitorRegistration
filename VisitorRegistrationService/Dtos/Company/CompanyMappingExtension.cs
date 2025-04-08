@@ -1,4 +1,6 @@
-﻿namespace VisitorRegistrationApi.Dtos.Company
+﻿using VisitorRegistrationShared.Extensions;
+
+namespace VisitorRegistrationApi.Dtos.Company
 {
     public static class CompanyMappingExtension
     {
@@ -6,7 +8,7 @@
         {
             var company = new VisitorRegistrationData.Entities.Company
             {
-                Name = createCompanyDto.Name,
+                Name = createCompanyDto.Name.ToTitleCase(),
             };
 
             return company;
@@ -14,7 +16,7 @@
 
         public static void UpdateDtoToEntity(this UpdateCompanyDto updateCompanyDto, VisitorRegistrationData.Entities.Company company)
         {
-            company.Name = updateCompanyDto.Name;
+            company.Name = updateCompanyDto.Name.ToTitleCase();
         }
     }
 }

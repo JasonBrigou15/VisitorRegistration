@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VisitorRegistrationData\VisitorRegistrationData.csproj" />
+    <ProjectReference Include="..\VisitorRegistrationShared\VisitorRegistrationShared.csproj" />
   </ItemGroup>
 
 </Project>

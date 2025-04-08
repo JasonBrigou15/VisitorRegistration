@@ -3,6 +3,7 @@ using FluentValidation;
 using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationApi.Validators.Company;
 using VisitorRegistrationData;
+using VisitorRegistrationService;
 
 namespace VisitorRegistrationApi
 {
@@ -20,9 +21,9 @@ namespace VisitorRegistrationApi
 
             // ServiceCollectionExtender - Data
             builder.Services.AddVisitorRegistrationData(builder.Configuration);
-            
-            // Validators
-            builder.Services.AddScoped<IValidator<CreateCompanyDto>, CreateCompanyValidator>();
+
+            // ServiceCollectionExtender - Service
+            builder.Services.AddVisitorRegistrationService();
 
             var app = builder.Build();
 
