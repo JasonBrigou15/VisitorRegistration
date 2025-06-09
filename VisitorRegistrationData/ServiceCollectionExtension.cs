@@ -14,6 +14,7 @@ namespace VisitorRegistrationData
                 x => x.MigrationsAssembly("VisitorRegistrationData")));
 
             services.AddTransient<ICompanyRepository, CompanyRepository>();
+            services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 
             return services;
         }

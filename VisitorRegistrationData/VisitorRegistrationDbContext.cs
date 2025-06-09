@@ -8,6 +8,8 @@ namespace VisitorRegistrationData
     {
         public DbSet<Company> Companies { get; set; } = null!;
 
+        public DbSet<Employee> Employees { get; set; }
+
         public VisitorRegistrationDbContext() { }
 
         public VisitorRegistrationDbContext(DbContextOptions<VisitorRegistrationDbContext> options) : base(options) { }
@@ -15,6 +17,8 @@ namespace VisitorRegistrationData
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+
+            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

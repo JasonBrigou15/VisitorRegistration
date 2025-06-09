@@ -8,6 +8,8 @@
 
         public string LastName { get; set; } = string.Empty;
 
+        public string Title { get; set; } = string.Empty;
+
         public string CompanyEmail { get; set; } = string.Empty;
 
         public int CompanyId { get; set; }

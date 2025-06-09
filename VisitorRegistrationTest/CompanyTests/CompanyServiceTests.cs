@@ -5,7 +5,6 @@ using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService;
-using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationTest
 {

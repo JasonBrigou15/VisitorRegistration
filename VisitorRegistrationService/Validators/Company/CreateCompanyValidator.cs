@@ -30,7 +30,7 @@ namespace VisitorRegistrationApi.Validators.Company
 
             var companies = await companyRepository.GetAllCompanies();
 
-            return !companies.Any(c => c.Name.NormalizeForComparison() == nameToCheck);
+            return !companies.Where(c => !c.IsDeleted).Any(c => c.Name.NormalizeForComparison() == nameToCheck);
         }
     }
 }

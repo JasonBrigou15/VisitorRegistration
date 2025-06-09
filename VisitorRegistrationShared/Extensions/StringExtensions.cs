@@ -22,7 +22,9 @@ namespace VisitorRegistrationShared.Extensions
             }
 
             // Convert to lowercase and trim whitespace
-            return sb.ToString().ToLowerInvariant().Trim();
+            return string.Concat(sb.ToString()
+                .ToLowerInvariant()
+                .Where(c => !char.IsWhiteSpace(c)));
         }
 
         public static string ToTitleCase(this string input)
@@ -32,6 +34,22 @@ namespace VisitorRegistrationShared.Extensions
 
             TextInfo textInfo = CultureInfo.InvariantCulture.TextInfo;
             return textInfo.ToTitleCase(input.ToLowerInvariant());
+        }
+
+        public static string ToEmailAddress(string firstName, string lastName, string title, string companyName)
+        {
+            string Normalize(string value) => value
+                .NormalizeForComparison()
+                .Replace(" ", "")
+                .Replace("'", "")
+                .Replace("-", "");
+
+            var first = Normalize(firstName);
+            var last = Normalize(lastName);
+            var jobTitle = Normalize(title);
+            var company = Normalize(companyName);
+
+            return $"{first}.{last}.{jobTitle}@{company}.com";
         }
     }
 }

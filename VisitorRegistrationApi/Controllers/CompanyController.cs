@@ -23,10 +23,12 @@ namespace VisitorRegistrationApi.Controllers
 
             if (!companies.Any())
             {
-                return NotFound("No companies found.");
+                return NotFound("No companies found");
             }
 
-            return Ok(companies);
+            var companyDto = companies.Select(c => c.ToGetDto()).ToList();
+
+            return Ok(companyDto);
         }
 
         [HttpGet("{id}")]
@@ -44,7 +46,9 @@ namespace VisitorRegistrationApi.Controllers
                 return NotFound($"Company with ID {id} was not found.");
             }
 
-            return Ok(company);
+            var companyDto = company.ToGetDto();
+
+            return Ok(companyDto);
         }
 
         [HttpPost]
@@ -89,7 +93,9 @@ namespace VisitorRegistrationApi.Controllers
             }
 
             if (company.IsDeleted)
+            {
                 return BadRequest("This company is already deleted");
+            }
 
             await companyService.DeleteCompany(id);
 

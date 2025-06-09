@@ -28,12 +28,13 @@ namespace VisitorRegistrationData.Repositories
         }
 
         public async Task<List<Company>> GetAllCompanies() => await context.Companies
-            .OrderBy(c => c.Name)
             .Include(c => c.Employees)
+            .Where(c => !c.IsDeleted)
             .ToListAsync();
 
         public async Task<Company?> GetCompanyById(int id) => await context.Companies
             .Include(c => c.Employees)
+            .Where(c => !c.IsDeleted)
             .SingleOrDefaultAsync(c => c.Id == id);
 
         public async Task UpdateCompany(Company company)

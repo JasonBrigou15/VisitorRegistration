@@ -2,7 +2,6 @@
 using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
-using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationService
 {
