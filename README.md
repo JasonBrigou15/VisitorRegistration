@@ -26,7 +26,7 @@ De focus van deze re-build ligt op:
 - **VisitorRegistrationTest**  
   - Unit tests voor CompanyService & EmployeeService  
 
-## ⚙Technologieën
+## Technologieën
 - ASP.NET Core  
 - Entity Framework Core  
 - FluentValidation  
