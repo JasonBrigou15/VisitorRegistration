@@ -1,4 +1,4 @@
-# VisitorRegistration – WIP re-build van mijn stageproject
+# VisitorRegistration – re-build van mijn stageproject
 
 ## Over dit project
 Dit project is een **heropbouw** van mijn stageopdracht (VDAB-opleiding Softwareontwikkeling).  
