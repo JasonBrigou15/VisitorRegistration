@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
+using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationData.Repositories
 {
@@ -36,6 +37,15 @@ namespace VisitorRegistrationData.Repositories
             .Include(c => c.Employees)
             .Where(c => !c.IsDeleted)
             .SingleOrDefaultAsync(c => c.Id == id);
+
+        public async Task<Company?> GetCompanyByName(string Companyname)
+        {
+            var companies = await context.Companies
+                .Where(c => !c.IsDeleted)
+                .ToListAsync();
+
+            return companies.SingleOrDefault(c => c.Name.NormalizeForComparison() == Companyname.NormalizeForComparison());
+        }
 
         public async Task UpdateCompany(Company company)
         {

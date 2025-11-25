@@ -8,6 +8,8 @@ namespace VisitorRegistrationData.Interfaces
 
         Task<Company?> GetCompanyById(int id);
 
+        Task<Company?> GetCompanyByName(string Companyname);
+
         Task<Company> CreateCompany(Company company);
 
         Task UpdateCompany(Company company);
