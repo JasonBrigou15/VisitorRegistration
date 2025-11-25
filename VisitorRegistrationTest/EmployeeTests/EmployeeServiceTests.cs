@@ -8,7 +8,7 @@ using VisitorRegistrationService;
 using VisitorRegistrationService.Dtos.Employee;
 using VisitorRegistrationShared.Extensions;
 
-namespace VisitorRegistrationTest.CompanyTests
+namespace VisitorRegistrationTest.EmployeeTests
 {
     public class EmployeeServiceTests
     {
@@ -36,7 +36,7 @@ namespace VisitorRegistrationTest.CompanyTests
                 updateEmployeeValidatorMock.Object);
         }
 
-        // GetAllCompanies
+        // GetAllEmployees
 
         [Fact]
         public async Task GetAllEmployees_ShouldReturnList_WhenEmployeesExist()

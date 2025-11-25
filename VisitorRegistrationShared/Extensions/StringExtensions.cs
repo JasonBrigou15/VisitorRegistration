@@ -51,5 +51,16 @@ namespace VisitorRegistrationShared.Extensions
 
             return $"{first}.{last}.{jobTitle}@{company}.com";
         }
+
+        public static string NormalizeEmailForComparison(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            return input
+                .Trim()                
+                .Replace(" ", "")      
+                .ToLowerInvariant();
+        }
     }
 }
