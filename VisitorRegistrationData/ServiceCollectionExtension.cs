@@ -16,6 +16,7 @@ namespace VisitorRegistrationData
             services.AddTransient<ICompanyRepository, CompanyRepository>();
             services.AddTransient<IEmployeeRepository, EmployeeRepository>();
             services.AddTransient<IVisitorRepository, VisitorRepository>();
+            services.AddTransient<IAppointmentRepository, AppointmentRepository>();
 
             return services;
         }
