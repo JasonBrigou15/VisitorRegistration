@@ -14,6 +14,8 @@ namespace VisitorRegistrationData
 
         public DbSet<Visitor> Visitors { get; set; } = null!;
 
+        public DbSet<Appointment> Appointments { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +24,8 @@ namespace VisitorRegistrationData
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
 
             modelBuilder.ApplyConfiguration(new VisitorConfiguration());
+
+            modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
