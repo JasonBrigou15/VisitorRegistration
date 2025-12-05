@@ -6,6 +6,7 @@ using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService;
 using VisitorRegistrationService.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Appointments;
 
 namespace VisitorRegistrationTest.AppointmentTests
 {

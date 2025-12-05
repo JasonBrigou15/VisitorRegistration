@@ -3,6 +3,7 @@ using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService.Dtos.Employee;
+using VisitorRegistrationShared.Dtos.Employee;
 
 namespace VisitorRegistrationService
 {

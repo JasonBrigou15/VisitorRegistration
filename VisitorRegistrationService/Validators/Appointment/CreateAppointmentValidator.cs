@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using VisitorRegistrationService.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Appointments;
 
 namespace VisitorRegistrationService.Validators.Appointment
 {

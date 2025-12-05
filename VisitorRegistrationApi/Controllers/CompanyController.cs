@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationService;
+using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
 
 namespace VisitorRegistrationApi.Controllers
 {

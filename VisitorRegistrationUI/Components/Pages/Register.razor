@@ -1,0 +1,74 @@
+﻿@page "/register"
+@using VisitorRegistrationShared.Dtos.Visitor
+@using VisitorRegistrationUI.Services
+@inject ApiService Api
+@inject NavigationManager NavManager
+
+<div class="flex-container">
+    <h1>Vul uw gegevens in</h1>
+
+    <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
+        <FluentDialogHeader Visible="false" />
+        <h2>Registratie Voltooid</h2>
+        <p>@Message</p>
+        <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="BackToHome">OK</FluentButton>
+    </FluentDialog>
+
+    <EditForm Model="@registerVisitor" OnValidSubmit="SubmitRegistration" FormName="RegisterVisitorForm">
+
+        <DataAnnotationsValidator />
+
+        <FluentStack Style="display: flex; flex-direction: column; margin-left: 75px;">
+
+            <p>Voornaam</p>
+            <FluentTextField @bind-Value="registerVisitor.Firstname" Placeholder="John" Style="width: 25%" />
+
+            <p>Achternaam</p>
+            <FluentTextField @bind-Value="registerVisitor.Lastname" Placeholder="Smith" Style="width: 25%" />
+
+            <p>Email</p>
+            <FluentTextField @bind-Value="registerVisitor.Email" Placeholder="jonh.smith@example.com" Style="width: 25%" />
+
+            <p>Bedrijf</p>
+            <FluentTextField @bind-Value="registerVisitor.CompanyName" Placeholder="Ikea" Style="width: 25%" />
+
+            <ValidationSummary />
+
+            <FluentButton Type="ButtonType.Submit"
+                          Appearance="Appearance.Accent"
+                          Disabled="@isSubmitting">
+                @(isSubmitting ? "Bezig..." : "Submit")
+            </FluentButton>
+
+        </FluentStack>
+    </EditForm>
+</div>
+
+@code {
+    private bool isSubmitting = false;
+    private bool Hidden = true;
+
+    private CreateVisitorDto registerVisitor = new();
+    private string Message = string.Empty;
+
+    private async Task SubmitRegistration()
+    {
+        isSubmitting = true;
+        Message = "Formulier is geldig! (Test mode - no API call made)";
+
+        registerVisitor = new();
+
+        await Task.Delay(2000);
+
+        isSubmitting = false;
+
+        Hidden = false;
+
+        await Task.Delay(2000);
+
+    }
+    private void BackToHome(MouseEventArgs args)
+    {
+        NavManager.NavigateTo("/");
+    }
+}

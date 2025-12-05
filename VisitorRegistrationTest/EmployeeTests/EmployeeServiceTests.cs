@@ -5,7 +5,7 @@ using Moq;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService;
-using VisitorRegistrationService.Dtos.Employee;
+using VisitorRegistrationShared.Dtos.Employee;
 using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationTest.EmployeeTests

@@ -2,6 +2,8 @@
 using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
+using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
 
 namespace VisitorRegistrationService
 {

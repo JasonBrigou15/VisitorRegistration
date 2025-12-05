@@ -1,0 +1,13 @@
+﻿.flex-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-weight: bold;
+}
+
+    .flex-container h1 {
+        font-weight: bold;
+        font-size: 30px;
+    }

@@ -5,7 +5,7 @@ using Moq;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService;
-using VisitorRegistrationService.Dtos.Visitor;
+using VisitorRegistrationShared.Dtos.Visitor;
 
 namespace VisitorRegistrationTest.VisitorTests
 {

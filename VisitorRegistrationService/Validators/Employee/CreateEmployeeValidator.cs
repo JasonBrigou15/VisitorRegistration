@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using VisitorRegistrationService.Dtos.Employee;
+using VisitorRegistrationShared.Dtos.Employee;
 
 namespace VisitorRegistrationService.Validators.Employee
 {

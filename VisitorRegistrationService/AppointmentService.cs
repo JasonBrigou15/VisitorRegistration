@@ -2,6 +2,7 @@
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Appointments;
 
 namespace VisitorRegistrationService
 {

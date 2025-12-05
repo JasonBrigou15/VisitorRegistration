@@ -1,5 +1,6 @@
-﻿using VisitorRegistrationService.Dtos.Company;
-using VisitorRegistrationService.Dtos.Employee;
+﻿using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
+using VisitorRegistrationShared.Dtos.Employee;
 using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationApi.Dtos.Company

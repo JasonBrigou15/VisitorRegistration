@@ -1,4 +1,6 @@
-﻿namespace VisitorRegistrationService.Dtos.Visitor
+﻿using VisitorRegistrationShared.Dtos.Visitor;
+
+namespace VisitorRegistrationService.Dtos.Visitor
 {
     public static class VisitorMappingExtension
     {

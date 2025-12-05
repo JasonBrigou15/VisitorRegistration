@@ -1,4 +1,6 @@
-﻿namespace VisitorRegistrationService.Dtos.Appointments
+﻿using VisitorRegistrationShared.Dtos.Appointments;
+
+namespace VisitorRegistrationService.Dtos.Appointments
 {
     public static class AppointmentMappingExtension
     {

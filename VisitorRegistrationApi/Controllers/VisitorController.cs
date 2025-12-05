@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisitorRegistrationService;
 using VisitorRegistrationService.Dtos.Visitor;
+using VisitorRegistrationShared.Dtos.Visitor;
 
 namespace VisitorRegistrationApi.Controllers
 {
