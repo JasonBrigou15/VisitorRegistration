@@ -35,13 +35,12 @@ namespace VisitorRegistrationData.Repositories
 
         public async Task<Visitor?> GetVisitorByEmail(string email)
         {
-            var normalizedEmail = email.NormalizeEmailForComparison();
+            var normalizedEmail = email.Trim().ToLower();
 
-            var visitors = await context.Visitors
-                .Where(v => !v.IsDeleted)
-                .ToListAsync();
-
-            return visitors.SingleOrDefault(v => v.Email.NormalizeEmailForComparison() == normalizedEmail);
+            return await context.Visitors
+                .Include(v => v.Company)
+                .Where(v => v.Company == null || !v.Company.IsDeleted)
+                .SingleOrDefaultAsync(v => !v.IsDeleted && v.Email == normalizedEmail);
         }
 
         public async Task<Visitor?> GetVisitorById(int id) => await context.Visitors

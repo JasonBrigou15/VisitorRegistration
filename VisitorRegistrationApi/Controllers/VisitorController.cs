@@ -47,6 +47,24 @@ namespace VisitorRegistrationApi.Controllers
             return Ok(visitor);
         }
 
+        [HttpGet("by-email")]
+        public async Task<IActionResult> GetVisitorByEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is not valid");
+            }
+
+            var visitor = await visitorService.GetVisitorByEmail(email);
+
+            if (visitor == null)
+            {
+                return NotFound($"Visitor with email {email} was not found");
+            }
+
+            return Ok(visitor);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateNewVisitor([FromBody] CreateVisitorDto createVisitorDto)
         {

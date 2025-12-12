@@ -15,7 +15,7 @@
         gap: 10px;
         ">
         <FluentButton OnClick="GoToRegister" Appearance="Appearance.Accent">Registreren</FluentButton>
-        <FluentButton OnClick="GoToMakeAppointment" Appearance="Appearance.Accent">Aanmelden</FluentButton>
+        <FluentButton OnClick="GoToMakeAppointment" Appearance="Appearance.Accent">Maak afspraak</FluentButton>
     </FluentCard>
 </div>
 
@@ -27,6 +27,6 @@
 
     private void GoToMakeAppointment()
     {
-        navManager.NavigateTo("/make-appointment");
+        navManager.NavigateTo("/appointment");
     }
 }

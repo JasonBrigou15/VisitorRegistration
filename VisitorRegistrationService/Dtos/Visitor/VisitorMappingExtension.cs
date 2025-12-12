@@ -8,6 +8,7 @@ namespace VisitorRegistrationService.Dtos.Visitor
         {
             return new GetVisitorDto
             {
+                Id = visitor.Id,
                 Firstname = visitor.Firstname,
                 Lastname = visitor.Lastname,
                 Email = visitor.Email,

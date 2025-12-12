@@ -35,6 +35,11 @@ namespace VisitorRegistrationService
             return await employeeRepository.GetEmployeeById(id);
         }
 
+        public async Task<List<Employee>> GetEmployeesByCompanyId(int companyId)
+        {
+            return await employeeRepository.GetAllEmployeesByCompany(companyId);
+        }
+
         public async Task CreateNewEmployee(CreateEmployeeDto createEmployeeDto)
         {
             var validationResult = await this.createEmployeeDto.ValidateAsync(createEmployeeDto);

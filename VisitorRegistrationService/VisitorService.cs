@@ -35,6 +35,12 @@ namespace VisitorRegistrationService
             return visitor?.ToGetDto();
         }
 
+        public async Task<GetVisitorDto?> GetVisitorByEmail(string email)
+        {
+            var visitor = await visitorRepository.GetVisitorByEmail(email);
+            return visitor?.ToGetDto();
+        }
+
         public async Task CreateNewVisitor(CreateVisitorDto createVisitorDto)
         {
             var validationResult = await createVisitorDtoValidator.ValidateAsync(createVisitorDto);

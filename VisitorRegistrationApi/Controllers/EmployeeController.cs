@@ -51,6 +51,25 @@ namespace VisitorRegistrationApi.Controllers
             return Ok(employeeDto);
         }
 
+        [HttpGet("by-company")]
+        public async Task<IActionResult> GetEmployeesByCompany(int companyId)
+        {
+            if (companyId <= 0)
+            {
+                return BadRequest("Company ID is not valid");
+            }
+
+            var employees = await employeeService.GetEmployeesByCompanyId(companyId);
+
+            if (!employees.Any())
+            {
+                return NotFound($"No employees found for company with ID {companyId}");
+            }
+
+            var employeeDtos = employees.Select(e => e.ToGetDto()).ToList();
+            return Ok(employeeDtos);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateNewEmployee([FromBody] CreateEmployeeDto createEmployeeDto)
         {

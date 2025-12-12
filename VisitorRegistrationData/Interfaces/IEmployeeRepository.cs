@@ -8,6 +8,8 @@ namespace VisitorRegistrationData.Interfaces
 
         Task<Employee?> GetEmployeeById(int id);
 
+        Task<List<Employee>> GetAllEmployeesByCompany(int companyId);
+
         Task<Employee> CreateEmployee(Employee employee);
 
         Task UpdateEmployee(Employee employee);

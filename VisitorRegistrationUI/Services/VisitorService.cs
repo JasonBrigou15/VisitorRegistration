@@ -3,25 +3,36 @@ using VisitorRegistrationShared.Responses;
 
 namespace VisitorRegistrationUI.Services
 {
-    public class ApiService
+    public class VisitorService
     {
         private readonly HttpClient http;
 
-        public ApiService(IHttpClientFactory httpClientFactory)
+        public VisitorService(IHttpClientFactory httpClientFactory)
         {
             http = httpClientFactory.CreateClient("ApiClient");
         }
 
-        public async Task<GetVisitorDto?> GetVisitorById(int id)
+        public async Task<GetVisitorDto?> GetVisitorByEmailAsync(string email)
         {
-            var response = await http.GetAsync($"api/visitor/{id}");
-
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await http.GetAsync($"api/visitor/by-email?email={email}");
 
-            return await response.Content.ReadFromJsonAsync<GetVisitorDto>();
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return null;
+
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadFromJsonAsync<GetVisitorDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UI] Error calling GetVisitorByEmail: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<ApiResult> CreateVisitor(CreateVisitorDto dto)
