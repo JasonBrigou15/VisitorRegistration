@@ -8,6 +8,7 @@
 @inject VisitorService visitorApi
 @inject CompanyService companyApi
 @inject EmployeeService employeeApi
+@inject AppointmentService appointmentApi
 @inject NavigationManager navManager
 
 <div class="page-grid">
@@ -19,10 +20,17 @@
 
         <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
             <FluentDialogHeader Visible="false" />
-            <h3>Email werd niet gevonden</h3>
-            <p>Wilt u zich registreren?</p>
+            <h3>@DialogTitle</h3>
+            <p>@Message</p>
             <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="GoToRegisterPage">Registreren</FluentButton>
             <FluentButton BackgroundColor="red" Color="white" Autofocus="true" OnClick="GoToHome">Cancel</FluentButton>
+        </FluentDialog>
+
+        <FluentDialog @bind-Hidden="resultHidden" Style="text-align: center;">
+            <FluentDialogHeader Visible="false" />
+            <h3>@DialogTitle</h3>
+            <p>@Message</p>
+            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="CloseResultDialog">Terug</FluentButton>
         </FluentDialog>
 
         @if (!visitorFound)
@@ -116,7 +124,10 @@
 
                 @if (appointmentModel.StartTime != null && appointmentModel.EndTime != null)
                 {
-                    <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+                    <div>
+                        <FluentButton Style="margin-top: 20px" Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+                    </div>
+
                 }
             </EditForm>
 
@@ -135,7 +146,7 @@
                 <p>Datum: @appointment.AppointmentStartDate.ToString("dd-MM-yyyy")</p>
                 <p>Tijd: @appointment.AppointmentStartDate.ToString("HH:mm") - @appointment.AppointmentEndDate.ToString("HH:mm")</p>
 
-                <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="PrepareAppointment">Bevestigen</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="ConfirmAppointment">Bevestigen</FluentButton>
                 <FluentButton BackgroundColor="red" Color="white" OnClick="CancelSummary">Annuleren</FluentButton>
 
             </FluentDialog>
@@ -143,7 +154,8 @@
 
     </div>
 
-    <div></div>
+    <div>
+    </div>
 
 </div>
 
@@ -176,21 +188,24 @@
 
     public bool isSubmittingAppointment = false;
 
+    private string Message = string.Empty;
+    private string DialogTitle = string.Empty;
+    private bool resultHidden = true;
+
     private async Task SearchVisitorByEmail()
     {
         visitor = await visitorApi.GetVisitorByEmailAsync(emailModel.Email);
 
         if (visitor == null)
         {
+            DialogTitle = "Email werd niet gevonden";
+            Message = "Wilt u zich registreren?";
             Hidden = false;
-
         }
         else
         {
             visitorFound = true;
-
             appointment.VisitorId = visitor.Id;
-
             await LoadCompanies();
         }
     }
@@ -267,10 +282,30 @@
 
         try
         {
-            // TODO real API call later
-            summaryHidden = true;
+            var result = await appointmentApi.CreateAppointment(appointment);
 
-            await GoToHome();
+            if (result.Success)
+            {
+                DialogTitle = "Afspraak Bevestigd";
+                Message = "Uw afspraak is succesvol aangemaakt";
+                summaryHidden = true;
+                Hidden = false;
+                await GoToHome();
+            }
+            else
+            {
+                DialogTitle = "Er is een fout opgetreden";
+                Message = result.ErrorMessage ?? "Er ging iets mis";
+                summaryHidden = true;
+                resultHidden = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = "Er is een fout opgetreden bij het versturen van de gegevens.";
+            resultHidden = false;
+            summaryHidden = true;
+            Console.WriteLine(ex.Message);
         }
         finally
         {
@@ -291,5 +326,10 @@
     private async Task GoToHome()
     {
         navManager.NavigateTo("/");
+    }
+
+    private void CloseResultDialog()
+    {
+        resultHidden = true;
     }
 }

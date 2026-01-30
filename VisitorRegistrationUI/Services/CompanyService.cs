@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using VisitorRegistrationShared.Dtos.Company;
+﻿using VisitorRegistrationShared.Dtos.Company;
 
 namespace VisitorRegistrationUI.Services
 {
