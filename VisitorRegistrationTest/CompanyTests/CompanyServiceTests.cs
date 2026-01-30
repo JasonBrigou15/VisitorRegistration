@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using Moq;
-using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService;
+using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
 
 namespace VisitorRegistrationTest
 {

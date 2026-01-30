@@ -32,6 +32,11 @@ namespace VisitorRegistrationData.Repositories
             .Where(e => !e.IsDeleted)
             .ToListAsync();
 
+        public Task<List<Employee>> GetAllEmployeesByCompany(int companyId) => context.Employees
+            .Include(e => e.Company)
+            .Where(e => !e.IsDeleted && e.CompanyId == companyId)
+            .ToListAsync();
+
         public async Task<Employee?> GetEmployeeById(int id) => await context.Employees
             .Include(e => e.Company)
             .Where(e => !e.IsDeleted)

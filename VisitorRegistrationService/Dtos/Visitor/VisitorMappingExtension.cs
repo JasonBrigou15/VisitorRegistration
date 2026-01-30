@@ -1,4 +1,6 @@
-﻿namespace VisitorRegistrationService.Dtos.Visitor
+﻿using VisitorRegistrationShared.Dtos.Visitor;
+
+namespace VisitorRegistrationService.Dtos.Visitor
 {
     public static class VisitorMappingExtension
     {
@@ -6,6 +8,7 @@
         {
             return new GetVisitorDto
             {
+                Id = visitor.Id,
                 Firstname = visitor.Firstname,
                 Lastname = visitor.Lastname,
                 Email = visitor.Email,

@@ -1,4 +1,4 @@
-﻿using VisitorRegistrationData.Entities;
+﻿using VisitorRegistrationShared.Dtos.Employee;
 using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationService.Dtos.Employee

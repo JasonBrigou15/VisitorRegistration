@@ -3,6 +3,7 @@ using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService.Dtos.Employee;
+using VisitorRegistrationShared.Dtos.Employee;
 
 namespace VisitorRegistrationService
 {
@@ -32,6 +33,11 @@ namespace VisitorRegistrationService
         public async Task<Employee?> GetEmployeeById(int id)
         {
             return await employeeRepository.GetEmployeeById(id);
+        }
+
+        public async Task<List<Employee>> GetEmployeesByCompanyId(int companyId)
+        {
+            return await employeeRepository.GetAllEmployeesByCompany(companyId);
         }
 
         public async Task CreateNewEmployee(CreateEmployeeDto createEmployeeDto)

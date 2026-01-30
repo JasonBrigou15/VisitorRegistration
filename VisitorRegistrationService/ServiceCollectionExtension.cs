@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationApi.Validators.Company;
-using VisitorRegistrationService.Dtos.Appointments;
-using VisitorRegistrationService.Dtos.Employee;
-using VisitorRegistrationService.Dtos.Visitor;
 using VisitorRegistrationService.Validators.Appointment;
 using VisitorRegistrationService.Validators.Employee;
 using VisitorRegistrationService.Validators.Visitor;
+using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
+using VisitorRegistrationShared.Dtos.Employee;
+using VisitorRegistrationShared.Dtos.Visitor;
 
 namespace VisitorRegistrationService
 {

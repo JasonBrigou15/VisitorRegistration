@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using VisitorRegistrationApi.Dtos.Company;
 using VisitorRegistrationData.Interfaces;
+using VisitorRegistrationShared.Dtos.Appointments;
 using VisitorRegistrationShared.Extensions;
 
 namespace VisitorRegistrationApi.Validators.Company

@@ -2,6 +2,7 @@
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Appointments;
 
 namespace VisitorRegistrationService
 {
@@ -68,7 +69,7 @@ namespace VisitorRegistrationService
                 if (IsOverlapping(createAppointmentDto.AppointmentStartDate, createAppointmentDto.AppointmentEndDate,
                     appointment.AppointmentStartDate, appointment.AppointmentEndDate))
                 {
-                    throw new ArgumentException("The employee has another appointment during this time.");
+                    throw new ArgumentException("De medewerker heeft al een afspraak op dit tijdstip.");
                 }
             }
 
@@ -79,7 +80,7 @@ namespace VisitorRegistrationService
                 if (IsOverlapping(createAppointmentDto.AppointmentStartDate, createAppointmentDto.AppointmentEndDate,
                     appointment.AppointmentStartDate, appointment.AppointmentEndDate))
                 {
-                    throw new ArgumentException("The visitor has another appointment during this time.");
+                    throw new ArgumentException("De bezoeker heeft al een afspraak op dit tijdstip.");
                 }
             }
 

@@ -1,0 +1,22 @@
+﻿.page-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    font-family: Inter;
+}
+
+page-grid h1 {
+    font-weight: bold;
+}
+
+.middle-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.validation-box {
+   background-color: yellow;
+   margin: 0px;
+}

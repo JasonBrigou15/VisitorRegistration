@@ -1,0 +1,32 @@
+﻿@page "/"
+@inject NavigationManager navManager;
+
+<PageTitle>Home</PageTitle>
+
+<div class="flex-container">
+
+    <h1>Welkom!</h1>
+
+    <FluentCard Style="
+        background-color: #d8f5d1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        ">
+        <FluentButton OnClick="GoToRegister" Appearance="Appearance.Accent">Registreren</FluentButton>
+        <FluentButton OnClick="GoToMakeAppointment" Appearance="Appearance.Accent">Maak afspraak</FluentButton>
+    </FluentCard>
+</div>
+
+@code {
+    private void GoToRegister()
+    {
+        navManager.NavigateTo("/register");
+    }
+
+    private void GoToMakeAppointment()
+    {
+        navManager.NavigateTo("/appointment");
+    }
+}

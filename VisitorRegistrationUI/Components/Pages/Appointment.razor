@@ -1,0 +1,335 @@
+﻿@page "/appointment"
+@using VisitorRegistrationShared.Dtos.Appointments
+@using VisitorRegistrationShared.Dtos.Company
+@using VisitorRegistrationShared.Dtos.Employee
+@using VisitorRegistrationShared.Dtos.Visitor
+@using VisitorRegistrationUI.Models
+@using VisitorRegistrationUI.Services
+@inject VisitorService visitorApi
+@inject CompanyService companyApi
+@inject EmployeeService employeeApi
+@inject AppointmentService appointmentApi
+@inject NavigationManager navManager
+
+<div class="page-grid">
+
+    <div></div>
+
+    <div class="middle-column">
+        <h1>Maak een afspraak</h1>
+
+        <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
+            <FluentDialogHeader Visible="false" />
+            <h3>@DialogTitle</h3>
+            <p>@Message</p>
+            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="GoToRegisterPage">Registreren</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" Autofocus="true" OnClick="GoToHome">Cancel</FluentButton>
+        </FluentDialog>
+
+        <FluentDialog @bind-Hidden="resultHidden" Style="text-align: center;">
+            <FluentDialogHeader Visible="false" />
+            <h3>@DialogTitle</h3>
+            <p>@Message</p>
+            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="CloseResultDialog">Terug</FluentButton>
+        </FluentDialog>
+
+        @if (!visitorFound)
+        {
+            <EditForm Model="@emailModel" OnValidSubmit="SearchVisitorByEmail">
+                <DataAnnotationsValidator />
+
+                <FluentStack Style="display: flex; flex-direction: column">
+                    <FluentTextField @bind-Value="emailModel.Email" Label="Vul uw e-mailadres in" Required="true" Type="email" Placeholder="john@example.com" />
+
+                    <ValidationSummary style="padding-left: 15px; margin: 0px;" />
+
+                    <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+                </FluentStack>
+            </EditForm>
+        }
+
+        @if (visitorFound)
+        {
+            <EditForm Model="@appointmentModel" OnValidSubmit="PrepareAppointment">
+                <h3>Welkom terug @visitor?.Firstname!</h3>
+
+                <DataAnnotationsValidator />
+
+                <FluentSelect TOption="GetCompanyDto"
+                              Label="Kies een bedrijf"
+                              @bind-Value="appointmentModel.CompanyId"
+                              @bind-Value:after="OnCompanyChanged"
+                              Width="275px"
+                              Height="250px">
+
+                    <FluentOption Value="" Selected="true">Kies een bedrijf...</FluentOption>
+
+                    @foreach (var c in companies)
+                    {
+                        <FluentOption Value="@c.CompanyId.ToString()">@c.CompanyName</FluentOption>
+                    }
+                </FluentSelect>
+
+                @if (!string.IsNullOrEmpty(appointmentModel.CompanyId))
+                {
+                    <FluentSelect TOption="GetEmployeeDto"
+                                  Label="Kies een werknemer"
+                                  @bind-Value="appointmentModel.EmployeeId"
+                                  Width="275px"
+                                  Height="250px">
+
+                        <FluentOption Value="" Selected="true">Kies een medewerker...</FluentOption>
+
+                        @foreach (var e in employees)
+                        {
+                            <FluentOption Value="@e.EmployeeId.ToString()">@e.FirstName @e.LastName | @e.Title</FluentOption>
+                        }
+
+                    </FluentSelect>
+                }
+
+                @if (!string.IsNullOrEmpty(appointmentModel.EmployeeId))
+                {
+                    <FluentDatePicker @bind-Value="appointmentModel.AppointmentDate"
+                                      Label="Kies een datum"
+                                      Placeholder="Selecteer een datum" />
+                }
+
+                @if (appointmentModel.AppointmentDate != null)
+                {
+                    <FluentTimePicker @bind-Value="appointmentModel.StartTime"
+                                      Label="Starttijd"
+                                      Placeholder="Kies een starttijd" />
+
+                    <FluentTimePicker @bind-Value="appointmentModel.EndTime"
+                                      Label="Eindtijd"
+                                      Placeholder="Kies een eindtijd" />
+                }
+
+                @if (!string.IsNullOrEmpty(dateError) || !string.IsNullOrEmpty(timeError))
+                {
+                    <ul class="validation-errors">
+                        @if (!string.IsNullOrEmpty(dateError))
+                        {
+                            <li>@dateError</li>
+                        }
+                        @if (!string.IsNullOrEmpty(timeError))
+                        {
+                            <li>@timeError</li>
+                        }
+                    </ul>
+                }
+
+                <ValidationSummary />
+
+                @if (appointmentModel.StartTime != null && appointmentModel.EndTime != null)
+                {
+                    <div>
+                        <FluentButton Style="margin-top: 20px" Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+                    </div>
+
+                }
+            </EditForm>
+
+            <FluentDialog @bind-Hidden="summaryHidden" Style="text-align: center">
+                <FluentDialogHeader Visible="false" />
+
+                <h3>Bevestig afspraak</h3>
+
+                <p>Bedrijf: @companies.FirstOrDefault(c => c.CompanyId == appointment.CompanyId)?.CompanyName</p>
+                <p>
+                    Werknemer: @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.FirstName
+                    @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.LastName |
+                    @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.Title
+                </p>
+
+                <p>Datum: @appointment.AppointmentStartDate.ToString("dd-MM-yyyy")</p>
+                <p>Tijd: @appointment.AppointmentStartDate.ToString("HH:mm") - @appointment.AppointmentEndDate.ToString("HH:mm")</p>
+
+                <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="ConfirmAppointment">Bevestigen</FluentButton>
+                <FluentButton BackgroundColor="red" Color="white" OnClick="CancelSummary">Annuleren</FluentButton>
+
+            </FluentDialog>
+        }
+
+    </div>
+
+    <div>
+    </div>
+
+</div>
+
+@code {
+    private EmailModel emailModel = new();
+    private GetVisitorDto? visitor;
+    private bool Hidden = true;
+
+    private bool visitorFound = false;
+
+    private CreateAppointmentDto appointment = new()
+    {
+        AppointmentStartDate = DateTime.Now,
+        AppointmentEndDate = DateTime.Now.AddHours(1),
+        VisitorId = 0,
+        EmployeeId = 0,
+        CompanyId = 0
+    };
+
+    private List<GetCompanyDto> companies = new();
+
+    private List<GetEmployeeDto> employees = new();
+
+    private AppointmentModel appointmentModel = new();
+
+    private string dateError = string.Empty;
+    private string timeError = string.Empty;
+
+    private bool summaryHidden = true;
+
+    public bool isSubmittingAppointment = false;
+
+    private string Message = string.Empty;
+    private string DialogTitle = string.Empty;
+    private bool resultHidden = true;
+
+    private async Task SearchVisitorByEmail()
+    {
+        visitor = await visitorApi.GetVisitorByEmailAsync(emailModel.Email);
+
+        if (visitor == null)
+        {
+            DialogTitle = "Email werd niet gevonden";
+            Message = "Wilt u zich registreren?";
+            Hidden = false;
+        }
+        else
+        {
+            visitorFound = true;
+            appointment.VisitorId = visitor.Id;
+            await LoadCompanies();
+        }
+    }
+
+    private async Task LoadCompanies()
+    {
+        companies = await companyApi.GetCompanies();
+    }
+
+    private async Task LoadEmployeesBasedOnCompany(string companyId)
+    {
+        employees.Clear();
+        appointmentModel.EmployeeId = "";
+
+        if (!int.TryParse(companyId, out int id))
+            return;
+
+        employees = await employeeApi.GetEmployeesByCompany(id);
+    }
+
+    private async Task OnCompanyChanged()
+    {
+        await LoadEmployeesBasedOnCompany(appointmentModel.CompanyId);
+    }
+
+    private bool ValidateDateLogic()
+    {
+        if (appointmentModel.AppointmentDate == null || appointmentModel.StartTime == null || appointmentModel.EndTime == null)
+            return false;
+
+        var start = appointmentModel.AppointmentDate.Value.Date + appointmentModel.StartTime.Value.TimeOfDay;
+
+        var end = appointmentModel.AppointmentDate.Value.Date + appointmentModel.EndTime.Value.TimeOfDay;
+
+        if (start < DateTime.Now)
+        {
+            dateError = "De afspraak kan niet in het verleden liggen";
+            return false;
+        }
+
+        if (end <= start)
+        {
+            timeError = "Eindtijd moet later zijn dan de starttijd";
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task PrepareAppointment()
+    {
+        dateError = "";
+        timeError = "";
+
+        if (!ValidateDateLogic())
+            return;
+
+        appointment.CompanyId = int.Parse(appointmentModel.CompanyId);
+        appointment.EmployeeId = int.Parse(appointmentModel.EmployeeId);
+
+        appointment.AppointmentStartDate = appointmentModel.AppointmentDate!.Value.Date.Add(appointmentModel.StartTime!.Value.TimeOfDay);
+
+        appointment.AppointmentEndDate = appointmentModel.AppointmentDate!.Value.Date.Add(appointmentModel.EndTime!.Value.TimeOfDay);
+
+        summaryHidden = false;
+    }
+
+    private async Task ConfirmAppointment()
+    {
+        if (isSubmittingAppointment)
+            return;
+
+        isSubmittingAppointment = true;
+
+        try
+        {
+            var result = await appointmentApi.CreateAppointment(appointment);
+
+            if (result.Success)
+            {
+                DialogTitle = "Afspraak Bevestigd";
+                Message = "Uw afspraak is succesvol aangemaakt";
+                summaryHidden = true;
+                Hidden = false;
+                await GoToHome();
+            }
+            else
+            {
+                DialogTitle = "Er is een fout opgetreden";
+                Message = result.ErrorMessage ?? "Er ging iets mis";
+                summaryHidden = true;
+                resultHidden = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Message = "Er is een fout opgetreden bij het versturen van de gegevens.";
+            resultHidden = false;
+            summaryHidden = true;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isSubmittingAppointment = false;
+        }
+    }
+
+    private void CancelSummary()
+    {
+        summaryHidden = true;
+    }
+
+    private async Task GoToRegisterPage()
+    {
+        navManager.NavigateTo("/register");
+    }
+
+    private async Task GoToHome()
+    {
+        navManager.NavigateTo("/");
+    }
+
+    private void CloseResultDialog()
+    {
+        resultHidden = true;
+    }
+}

@@ -1,0 +1,99 @@
+﻿@page "/register"
+@using VisitorRegistrationShared.Dtos.Visitor
+@using VisitorRegistrationUI.Services
+@inject VisitorService Api
+@inject NavigationManager NavManager
+
+<div class="page-grid">
+
+    <div></div>
+
+    <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
+        <FluentDialogHeader Visible="false" />
+        <h2>@DialogTitle</h2>
+        <p>@Message</p>
+        <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="BackToHome">OK</FluentButton>
+    </FluentDialog>
+
+    <div class="middle-column">
+        <h1>Vul uw gegevens in</h1>
+
+        <EditForm Model="@registerVisitor" OnValidSubmit="SubmitRegistration" FormName="RegisterVisitorForm">
+
+            <DataAnnotationsValidator />
+
+            <FluentStack Style="display: flex; flex-direction: column;">
+
+                <p>Voornaam</p>
+                <FluentTextField @bind-Value="registerVisitor.Firstname" Placeholder="John" />
+
+                <p>Achternaam</p>
+                <FluentTextField @bind-Value="registerVisitor.Lastname" Placeholder="Smith" />
+
+                <p>Email</p>
+                <FluentTextField @bind-Value="registerVisitor.Email" Placeholder="jonh.smith@example.com" />
+
+                <p>Bedrijf</p>
+                <FluentTextField @bind-Value="registerVisitor.CompanyName" Placeholder="Ikea" />
+
+                <ValidationSummary style="padding-left: 15px; margin: 0px;" />
+
+                <FluentButton Type="ButtonType.Submit"
+                              Appearance="Appearance.Accent"
+                              Disabled="@isSubmitting"
+                              Style="margin-top: 20px">
+                    @(isSubmitting ? "Bezig..." : "Submit")
+                </FluentButton>
+
+            </FluentStack>
+        </EditForm>
+    </div>
+
+    <div></div>
+
+</div>
+
+@code {
+    private bool isSubmitting = false;
+    private bool Hidden = true;
+
+    private CreateVisitorDto registerVisitor = new();
+    private string Message = string.Empty;
+    private string DialogTitle = string.Empty;
+
+    private async Task SubmitRegistration()
+    {
+        try
+        {
+            isSubmitting = true;
+
+            var result = await Api.CreateVisitor(registerVisitor);
+
+            if (result.Success)
+            {
+                DialogTitle = "Registratie Voltooid";
+                Message = "Bezoeker succesvol geregistreerd";
+            }
+            else
+            {
+                DialogTitle = "Er is een fout opgetreden";
+                Message = result.ErrorMessage ?? "Er ging iets mis tijdens het registreren";
+            }
+
+            Hidden = false;
+
+            registerVisitor = new();
+        }
+        catch (Exception ex)
+        {
+            Message = "Er is een fout opgetreden bij het versturen van de gegevens.";
+            Hidden = false;
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+    private void BackToHome(MouseEventArgs args)
+    {
+        NavManager.NavigateTo("/");
+    }
+}

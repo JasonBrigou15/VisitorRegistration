@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisitorRegistrationService;
-using VisitorRegistrationService.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Appointments;
 
 namespace VisitorRegistrationApi.Controllers
 {
@@ -53,7 +53,15 @@ namespace VisitorRegistrationApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await appointmentService.CreateNewAppointment(createAppointmentDto);
+            try
+            {
+                await appointmentService.CreateNewAppointment(createAppointmentDto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new { error = ex.Message });
+            }
 
             return Ok("Appointment created successfully");
         }

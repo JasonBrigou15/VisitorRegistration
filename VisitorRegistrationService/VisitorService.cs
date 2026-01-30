@@ -2,6 +2,7 @@
 using VisitorRegistrationData.Entities;
 using VisitorRegistrationData.Interfaces;
 using VisitorRegistrationService.Dtos.Visitor;
+using VisitorRegistrationShared.Dtos.Visitor;
 
 namespace VisitorRegistrationService
 {
@@ -31,6 +32,12 @@ namespace VisitorRegistrationService
         public async Task<GetVisitorDto?> GetVisitorById(int id)
         {
             var visitor = await visitorRepository.GetVisitorById(id);
+            return visitor?.ToGetDto();
+        }
+
+        public async Task<GetVisitorDto?> GetVisitorByEmail(string email)
+        {
+            var visitor = await visitorRepository.GetVisitorByEmail(email);
             return visitor?.ToGetDto();
         }
 

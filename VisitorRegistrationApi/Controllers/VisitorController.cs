@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VisitorRegistrationService;
 using VisitorRegistrationService.Dtos.Visitor;
+using VisitorRegistrationShared.Dtos.Visitor;
 
 namespace VisitorRegistrationApi.Controllers
 {
@@ -41,6 +42,24 @@ namespace VisitorRegistrationApi.Controllers
             if (visitor == null)
             {
                 return NotFound($"Visitor with ID {id} was not found");
+            }
+
+            return Ok(visitor);
+        }
+
+        [HttpGet("by-email")]
+        public async Task<IActionResult> GetVisitorByEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is not valid");
+            }
+
+            var visitor = await visitorService.GetVisitorByEmail(email);
+
+            if (visitor == null)
+            {
+                return NotFound($"Visitor with email {email} was not found");
             }
 
             return Ok(visitor);
