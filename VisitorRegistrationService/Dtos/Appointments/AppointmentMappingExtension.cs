@@ -8,13 +8,17 @@ namespace VisitorRegistrationService.Dtos.Appointments
         {
             return new GetAppointmentDto
             {
+                Id = appointment.Id,
                 AppointmentStartDate = appointment.AppointmentStartDate,
                 AppointmentEndDate = appointment.AppointmentEndDate,
                 VisitorFirstname = appointment.Visitor.Firstname,
                 VisitorLastname = appointment.Visitor.Lastname,
                 EmployeeFirstname = appointment.Employee.FirstName,
                 EmployeeLastname = appointment.Employee.LastName,
-                CompanyName = appointment.Company.Name
+                CompanyName = appointment.Company.Name,
+                VisitorId = appointment.VisitorId,      
+                EmployeeId = appointment.EmployeeId,    
+                CompanyId = appointment.CompanyId
             };
         }
 

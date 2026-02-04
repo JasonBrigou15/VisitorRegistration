@@ -1,4 +1,6 @@
-﻿using VisitorRegistrationShared.Dtos.Company;
+﻿using VisitorRegistrationShared.Dtos.Appointments;
+using VisitorRegistrationShared.Dtos.Company;
+using VisitorRegistrationShared.Responses;
 
 namespace VisitorRegistrationUI.Services
 {
@@ -21,6 +23,57 @@ namespace VisitorRegistrationUI.Services
             var companies = await response.Content.ReadFromJsonAsync<List<GetCompanyDto>>();
 
             return companies ?? new List<GetCompanyDto>();
+        }
+
+        public async Task<ApiResult> CreateCompany(CreateCompanyDto dto)
+        {
+            var response = await http.PostAsJsonAsync("api/company", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new ApiResult { Success = true };
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            return new ApiResult
+            {
+                Success = false,
+                ErrorMessage = error
+            };
+        }
+
+        public async Task<ApiResult> UpdateCompany(UpdateCompanyDto dto)
+        {
+            var response = await http.PutAsJsonAsync($"api/company/{dto.Id}", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new ApiResult { Success = true };
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            return new ApiResult
+            {
+                Success = false,
+                ErrorMessage = error
+            };
+        }
+
+        public async Task<ApiResult> DeleteCompany(int id)
+        {
+            var response = await http.DeleteAsync($"api/company/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new ApiResult { Success = true };
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            return new ApiResult
+            {
+                Success = false,
+                ErrorMessage = error
+            };
         }
     }
 }

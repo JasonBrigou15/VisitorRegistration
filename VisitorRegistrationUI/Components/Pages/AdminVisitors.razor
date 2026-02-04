@@ -1,0 +1,182 @@
+﻿@page "/admin/visitors"
+@using VisitorRegistrationShared.Dtos.Visitor
+@using VisitorRegistrationUI.Services
+@inject VisitorRegistrationUI.Services.AdminService AdminService
+@inject VisitorService visitorService
+@inject NavigationManager Nav
+
+<h2>Bezoekers Beheren</h2>
+
+@if (visitors == null)
+{
+    <p>Laden...</p>
+}
+else
+{
+    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Bezoeker</FluentButton>
+
+    <FluentDataGrid Items="@visitors.AsQueryable()" style="margin-top: 20px;">
+        <PropertyColumn Property="@(v => v.Id)" Title="ID" />
+        <PropertyColumn Property="@(v => v.Firstname)" Title="Voornaam" />
+        <PropertyColumn Property="@(v => v.Lastname)" Title="Achternaam" />
+        <PropertyColumn Property="@(v => v.Email)" Title="Email" />
+        <PropertyColumn Property="@(v => v.CompanyName)" Title="Bedrijf" />
+        <TemplateColumn Title="Acties">
+            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditVisitor(context))">Bewerken</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteVisitor(context.Id))">Verwijderen</FluentButton>
+        </TemplateColumn>
+    </FluentDataGrid>
+}
+
+<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+    <FluentDialogHeader>
+        <h3>@dialogTitle</h3>
+    </FluentDialogHeader>
+
+    <EditForm Model="@currentVisitor" OnValidSubmit="SaveVisitor">
+        <DataAnnotationsValidator />
+
+        <FluentTextField @bind-Value="currentVisitor.Firstname"
+                         Label="Voornaam"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTextField @bind-Value="currentVisitor.Lastname"
+                         Label="Achternaam"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTextField @bind-Value="currentVisitor.Email"
+                         Label="Email"
+                         Required="true"
+                         Type="email"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTextField @bind-Value="currentVisitor.CompanyName"
+                         Label="Bedrijfsnaam"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <ValidationSummary />
+
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
+    </EditForm>
+</FluentDialog>
+
+<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+    <h3>Weet je het zeker?</h3>
+    <p>Wil je deze bezoeker verwijderen?</p>
+
+    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
+</FluentDialog>
+
+@code {
+    private List<GetVisitorDto> visitors = new();
+    private bool dialogHidden = true;
+    private bool deleteDialogHidden = true;
+    private string dialogTitle = "";
+    private CreateVisitorDto currentVisitor = new() { Firstname = "", Lastname = "", Email = "", CompanyName = "" };
+    private bool isEditMode = false;
+    private int editVisitorId = 0;
+    private int deleteVisitorId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminService.CheckSession();
+        if (!AdminService.IsAdminLoggedIn)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        await LoadVisitors();
+    }
+
+    private async Task LoadVisitors()
+    {
+        visitors = await visitorService.GetVisitors();
+    }
+
+    private void ShowAddDialog()
+    {
+        dialogTitle = "Nieuwe Bezoeker Toevoegen";
+        isEditMode = false;
+        currentVisitor = new() { Firstname = "", Lastname = "", Email = "", CompanyName = "" };
+        dialogHidden = false;
+    }
+
+    private void EditVisitor(GetVisitorDto visitor)
+    {
+        dialogTitle = "Bezoeker Bewerken";
+        isEditMode = true;
+        editVisitorId = visitor.Id;
+        currentVisitor = new()
+        {
+            Firstname = visitor.Firstname,
+            Lastname = visitor.Lastname,
+            Email = visitor.Email,
+            CompanyName = visitor.CompanyName
+        };
+        dialogHidden = false;
+    }
+
+    private async Task SaveVisitor()
+    {
+        try
+        {
+            if (isEditMode)
+            {
+                var updateDto = new UpdateVisitorDto
+                {
+                    Id = editVisitorId,
+                    Firstname = currentVisitor.Firstname,
+                    Lastname = currentVisitor.Lastname,
+                    Email = currentVisitor.Email,
+                    CompanyName = currentVisitor.CompanyName
+                };
+                await visitorService.UpdateVisitor(updateDto);
+            }
+            else
+            {
+                await visitorService.CreateVisitor(currentVisitor);
+            }
+
+            dialogHidden = true;
+            await LoadVisitors();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void DeleteVisitor(int id)
+    {
+        deleteVisitorId = id;
+        deleteDialogHidden = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            await visitorService.DeleteVisitor(deleteVisitorId);
+            deleteDialogHidden = true;
+            await LoadVisitors();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void CancelDelete()
+    {
+        deleteDialogHidden = true;
+    }
+
+    private void CloseDialog()
+    {
+        dialogHidden = true;
+    }
+}

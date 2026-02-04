@@ -1,0 +1,156 @@
+﻿@page "/admin/companies"
+@using VisitorRegistrationShared.Dtos.Company
+@using VisitorRegistrationShared.Dtos.Appointments
+@using VisitorRegistrationUI.Services
+@inject VisitorRegistrationUI.Services.AdminService AdminService
+@inject CompanyService companyService
+@inject NavigationManager Nav
+
+<h2>Bedrijven Beheren</h2>
+
+@if (companies == null)
+{
+    <p>Laden...</p>
+}
+else
+{
+    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuw Bedrijf</FluentButton>
+
+    <FluentDataGrid Items="@companies.AsQueryable()" style="margin-top: 20px;">
+        <PropertyColumn Property="@(c => c.CompanyId)" Title="ID" />
+        <PropertyColumn Property="@(c => c.CompanyName)" Title="Naam" />
+        <TemplateColumn Title="Acties">
+            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditCompany(context))">Bewerken</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteCompany(context.CompanyId))">Verwijderen</FluentButton>
+        </TemplateColumn>
+    </FluentDataGrid>
+}
+
+<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+    <FluentDialogHeader>
+        <h3>@dialogTitle</h3>
+    </FluentDialogHeader>
+
+    <EditForm Model="@currentCompany" OnValidSubmit="SaveCompany">
+        <DataAnnotationsValidator />
+
+        <FluentTextField @bind-Value="currentCompany.Name"
+                         Label="Bedrijfsnaam"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <ValidationSummary />
+
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
+    </EditForm>
+</FluentDialog>
+
+<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+    <h3>Weet je het zeker?</h3>
+    <p>Wil je dit bedrijf verwijderen?</p>
+
+    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
+</FluentDialog>
+
+@code {
+    private List<GetCompanyDto> companies = new();
+    private bool dialogHidden = true;
+    private bool deleteDialogHidden = true;
+    private string dialogTitle = "";
+    private CreateCompanyDto currentCompany = new() { Name = "" };
+    private bool isEditMode = false;
+    private int editCompanyId = 0;
+    private int deleteCompanyId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminService.CheckSession();
+        if (!AdminService.IsAdminLoggedIn)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        await LoadCompanies();
+    }
+
+    private async Task LoadCompanies()
+    {
+        companies = await companyService.GetCompanies();
+    }
+
+    private void ShowAddDialog()
+    {
+        dialogTitle = "Nieuw Bedrijf Toevoegen";
+        isEditMode = false;
+        currentCompany = new() { Name = "" };
+        dialogHidden = false;
+    }
+
+    private void EditCompany(GetCompanyDto company)
+    {
+        dialogTitle = "Bedrijf Bewerken";
+        isEditMode = true;
+        editCompanyId = company.CompanyId;
+        currentCompany = new() { Name = company.CompanyName };
+        dialogHidden = false;
+    }
+
+    private async Task SaveCompany()
+    {
+        try
+        {
+            if (isEditMode)
+            {
+                var updateDto = new UpdateCompanyDto
+                {
+                    Id = editCompanyId,
+                    Name = currentCompany.Name
+                };
+                await companyService.UpdateCompany(updateDto);
+            }
+            else
+            {
+                await companyService.CreateCompany(currentCompany);
+            }
+
+            dialogHidden = true;
+            await LoadCompanies();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void DeleteCompany(int id)
+    {
+        deleteCompanyId = id;
+        deleteDialogHidden = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            await companyService.DeleteCompany(deleteCompanyId);
+            deleteDialogHidden = true;
+            await LoadCompanies();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void CancelDelete()
+    {
+        deleteDialogHidden = true;
+    }
+
+    private void CloseDialog()
+    {
+        dialogHidden = true;
+    }
+}

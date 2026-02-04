@@ -66,7 +66,7 @@ namespace VisitorRegistrationApi.Controllers
             return Ok("Company successfully created");
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyDto updateCompanyDto)
         {
             if (!ModelState.IsValid)
@@ -79,7 +79,7 @@ namespace VisitorRegistrationApi.Controllers
             return Ok("Company successfully updated");
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
             if (id <= 0)

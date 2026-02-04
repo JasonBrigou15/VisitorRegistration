@@ -1,0 +1,181 @@
+﻿@page "/admin/employees"
+@using VisitorRegistrationShared.Dtos.Employee
+@using VisitorRegistrationUI.Services
+@inject VisitorRegistrationUI.Services.AdminService AdminService
+@inject EmployeeService employeeService
+@inject NavigationManager Nav
+
+<h2>Werknemers Beheren</h2>
+
+@if (employees == null)
+{
+    <p>Laden...</p>
+}
+else
+{
+    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Werknemer</FluentButton>
+
+    <FluentDataGrid Items="@employees.AsQueryable()" style="margin-top: 20px;">
+        <PropertyColumn Property="@(e => e.EmployeeId)" Title="ID" />
+        <PropertyColumn Property="@(e => e.FirstName)" Title="Voornaam" />
+        <PropertyColumn Property="@(e => e.LastName)" Title="Achternaam" />
+        <PropertyColumn Property="@(e => e.Title)" Title="Functie" />
+        <PropertyColumn Property="@(e => e.CompanyName)" Title="Bedrijf" />
+        <TemplateColumn Title="Acties">
+            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditEmployee(context))">Bewerken</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteEmployee(context.EmployeeId))">Verwijderen</FluentButton>
+        </TemplateColumn>
+    </FluentDataGrid>
+}
+
+<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+    <FluentDialogHeader>
+        <h3>@dialogTitle</h3>
+    </FluentDialogHeader>
+
+    <EditForm Model="@currentEmployee" OnValidSubmit="SaveEmployee">
+        <DataAnnotationsValidator />
+
+        <FluentTextField @bind-Value="currentEmployee.FirstName"
+                         Label="Voornaam"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTextField @bind-Value="currentEmployee.LastName"
+                         Label="Achternaam"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTextField @bind-Value="currentEmployee.Title"
+                         Label="Functie"
+                         Required="true"
+                         Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentNumberField @bind-Value="currentEmployee.CompanyId"
+                           Label="Bedrijf ID"
+                           Required="true"
+                           Style="width: 100%; margin-bottom: 10px;" />
+
+        <ValidationSummary />
+
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
+    </EditForm>
+</FluentDialog>
+
+<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+    <h3>Weet je het zeker?</h3>
+    <p>Wil je deze werknemer verwijderen?</p>
+
+    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
+</FluentDialog>
+
+@code {
+    private List<GetEmployeeDto> employees = new();
+    private bool dialogHidden = true;
+    private bool deleteDialogHidden = true;
+    private string dialogTitle = "";
+    private CreateEmployeeDto currentEmployee = new() { FirstName = "", LastName = "", Title = "", CompanyId = 0 };
+    private bool isEditMode = false;
+    private int editEmployeeId = 0;
+    private int deleteEmployeeId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminService.CheckSession();
+        if (!AdminService.IsAdminLoggedIn)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        await LoadEmployees();
+    }
+
+    private async Task LoadEmployees()
+    {
+        employees = await employeeService.GetEmployees();
+    }
+
+    private void ShowAddDialog()
+    {
+        dialogTitle = "Nieuwe Werknemer Toevoegen";
+        isEditMode = false;
+        currentEmployee = new() { FirstName = "", LastName = "", Title = "", CompanyId = 0 };
+        dialogHidden = false;
+    }
+
+    private void EditEmployee(GetEmployeeDto employee)
+    {
+        dialogTitle = "Werknemer Bewerken";
+        isEditMode = true;
+        editEmployeeId = employee.EmployeeId;
+        currentEmployee = new()
+        {
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
+            Title = employee.Title
+        };
+        dialogHidden = false;
+    }
+
+    private async Task SaveEmployee()
+    {
+        try
+        {
+            if (isEditMode)
+            {
+                var updateDto = new UpdateEmployeeDto
+                {
+                    Id = editEmployeeId,
+                    FirstName = currentEmployee.FirstName,
+                    LastName = currentEmployee.LastName,
+                    Title = currentEmployee.Title,
+                    CompanyId = currentEmployee.CompanyId
+                };
+                await employeeService.UpdateEmployee(updateDto);
+            }
+            else
+            {
+                await employeeService.CreateEmployee(currentEmployee);
+            }
+
+            dialogHidden = true;
+            await LoadEmployees();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void DeleteEmployee(int id)
+    {
+        deleteEmployeeId = id;
+        deleteDialogHidden = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            await employeeService.DeleteEmployee(deleteEmployeeId);
+            deleteDialogHidden = true;
+            await LoadEmployees();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void CancelDelete()
+    {
+        deleteDialogHidden = true;
+    }
+
+    private void CloseDialog()
+    {
+        dialogHidden = true;
+    }
+}

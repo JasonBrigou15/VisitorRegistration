@@ -83,7 +83,7 @@ namespace VisitorRegistrationApi.Controllers
             return Ok("Employee successfully created");
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployeeDto updateEmployeeDto)
         {
             if (!ModelState.IsValid)
@@ -96,7 +96,7 @@ namespace VisitorRegistrationApi.Controllers
             return Ok("Employee successfully updated");
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             if (id <= 0)
