@@ -52,6 +52,7 @@ builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<CompanyService>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<AppointmentService>();
+builder.Services.AddScoped<AdminService>();
 
 var app = builder.Build();
 

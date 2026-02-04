@@ -1,0 +1,36 @@
+﻿@page "/admin/dashboard"
+@using VisitorRegistrationUI.Services
+@inject AdminService AdminService
+@inject NavigationManager Nav
+
+<FluentStack Orientation="Orientation.Horizontal" Width="100%">
+    <FluentNavMenu Width="250" Collapsible="true" Title="Menu">
+        <FluentNavLink Href="/admin/companies">
+            Bedrijven
+        </FluentNavLink>
+        <FluentNavLink Href="/admin/employees">
+            Werknemers
+        </FluentNavLink>
+        <FluentNavLink Href="/admin/visitors">
+            Bezoekers
+        </FluentNavLink>
+        <FluentNavLink Href="/admin/appointments">
+            Afspraken
+        </FluentNavLink>
+    </FluentNavMenu>
+
+    <div style="width: 100%; padding: 20px;">
+        <p>Welkom bij het admin dashboard!</p>
+    </div>
+</FluentStack>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminService.CheckSession();
+        if (!AdminService.IsAdminLoggedIn)
+        {
+            Nav.NavigateTo("/");
+        }
+    }
+}

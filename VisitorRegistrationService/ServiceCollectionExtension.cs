@@ -19,6 +19,7 @@ namespace VisitorRegistrationService
             services.AddTransient<EmployeeService>();
             services.AddTransient<VisitorService>();
             services.AddTransient<AppointmentService>();
+            services.AddTransient<AdminService>();
 
             // Validators
             services.AddScoped<IValidator<CreateCompanyDto>, CreateCompanyValidator>();

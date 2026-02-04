@@ -1,6 +1,37 @@
-﻿@inherits LayoutComponentBase
+﻿@using VisitorRegistrationUI.Services
+@inherits LayoutComponentBase
+@inject AdminService adminService
+@inject NavigationManager navManager
 
 <div class="page-background">
+
+    @if (adminService.IsAdminLoggedIn)
+    {
+        <FluentNavMenu Style="position: fixed !important;
+                                  top: 10px;
+                                  right: 10px;
+                                  background-color: #d8f5d1;
+                                  max-width: 170px;
+                                  font-weight: normal;
+                                  font-size: 12px">
+            <FluentNavGroup style="background-color: #d8f5d1" Title="Login als admin">
+                <FluentNavLink OnClick="GoToDashboard">Dashboard</FluentNavLink>
+                <FluentNavLink OnClick="Logout">Log uit</FluentNavLink>
+            </FluentNavGroup>
+        </FluentNavMenu>
+    }
+    else
+    {
+        <FluentButton Style="position: fixed !important;
+                                     top: 10px;
+                                     right: 10px;"
+                      Appearance="Appearance.Accent"
+                      OnClick="GoToLoginPage">
+            Login als admin
+        </FluentButton>
+    }
+
+
     @Body
 
     <FluentDialogProvider />
@@ -12,3 +43,26 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await adminService.CheckSession();
+    }
+
+    private void GoToLoginPage()
+    {
+        navManager.NavigateTo("/admin/login");
+    }
+
+    private void GoToDashboard()
+    {
+        navManager.NavigateTo("/admin/dashboard");
+    }
+
+    private async Task Logout()
+    {
+        await adminService.Logout();
+        navManager.NavigateTo("/", forceLoad: true);
+    }
+}

@@ -1,0 +1,86 @@
+﻿@page "/admin/login"
+@using VisitorRegistrationShared.Dtos.Admin
+@inject VisitorRegistrationUI.Services.AdminService adminService
+@inject NavigationManager navManager
+
+
+<div class="page-grid">
+    <div></div>
+
+    <div class="middle-column">
+        <h1>Admin Login</h1>
+
+        <EditForm Model="@loginAdminDto" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <FluentStack Style="display: flex; flex-direction: column;">
+                <p>Email</p>
+                <FluentTextField @bind-Value="loginAdminDto.Email"
+                                 Placeholder="admin@example.com"
+                                 TextFieldType="TextFieldType.Email"
+                                 Required="true" />
+
+                <p>Wachtwoord</p>
+                <FluentTextField @bind-Value="loginAdminDto.Password"
+                                 Placeholder="Wachtwoord"
+                                 TextFieldType="TextFieldType.Password"
+                                 Required="true" />
+            </FluentStack>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p style="color:red">@errorMessage</p>
+            }
+
+            <ValidationSummary style="padding-left: 15px; margin: 0px" />
+
+            <FluentButton Type="ButtonType.Submit"
+                          Appearance="Appearance.Accent"
+                          Disabled="@isSubmitting"
+                          Style="margin-top: 20px">
+
+                        @(isSubmitting ? "Bezig..." : "Inloggen")
+            </FluentButton>
+
+        </EditForm>
+
+    </div>
+</div>
+
+
+@code {
+    private LoginAdminDto loginAdminDto = new() { Email = "", Password = "" };
+
+    private bool isSubmitting = false;
+
+    private string errorMessage = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        isSubmitting = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var result = await adminService.Login(loginAdminDto);
+
+            if (result.Success)
+            {
+                navManager.NavigateTo("/admin/dashboard");
+            }
+            else
+            {
+                errorMessage = "Ongeldige inloggegevens";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = $"Er is een fout opgetreden";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
+

@@ -1,0 +1,223 @@
+﻿@page "/admin/appointments"
+@using VisitorRegistrationShared.Dtos.Appointments
+@using VisitorRegistrationUI.Services
+@inject VisitorRegistrationUI.Services.AdminService AdminService
+@inject AppointmentService appointmentService
+@inject NavigationManager Nav
+
+<h2>Afspraken Beheren</h2>
+
+@if (appointments == null)
+{
+    <p>Laden...</p>
+}
+else
+{
+    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Afspraak</FluentButton>
+
+    <FluentDataGrid Items="@appointments.AsQueryable()" style="margin-top: 20px;">
+        <PropertyColumn Property="@(a => a.Id)" Title="ID" />
+        <PropertyColumn Property="@(a => a.VisitorFirstname + ' ' + a.VisitorLastname)" Title="Bezoeker" />
+        <PropertyColumn Property="@(a => a.EmployeeFirstname + ' ' + a.EmployeeLastname)" Title="Werknemer" />
+        <PropertyColumn Property="@(a => a.CompanyName)" Title="Bedrijf" />
+        <PropertyColumn Property="@(a => a.AppointmentStartDate.ToString("dd-MM-yyyy HH:mm"))" Title="Start" />
+        <PropertyColumn Property="@(a => a.AppointmentEndDate.ToString("dd-MM-yyyy HH:mm"))" Title="Eind" />
+        <TemplateColumn Title="Acties">
+            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditAppointment(context))">Bewerken</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteAppointment(context.Id))">Verwijderen</FluentButton>
+        </TemplateColumn>
+    </FluentDataGrid>
+}
+
+<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+    <FluentDialogHeader>
+        <h3>@dialogTitle</h3>
+    </FluentDialogHeader>
+
+    <EditForm Model="@currentAppointment" OnValidSubmit="SaveAppointment">
+        <DataAnnotationsValidator />
+
+        <FluentNumberField @bind-Value="currentAppointment.VisitorId"
+                           Label="Bezoeker ID"
+                           Required="true"
+                           Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentNumberField @bind-Value="currentAppointment.EmployeeId"
+                           Label="Werknemer ID"
+                           Required="true"
+                           Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentNumberField @bind-Value="currentAppointment.CompanyId"
+                           Label="Bedrijf ID"
+                           Required="true"
+                           Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentDatePicker @bind-Value="appointmentDate"
+                          Label="Datum"
+                          Required="true"
+                          Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTimePicker @bind-Value="appointmentStartTime"
+                          Label="Starttijd"
+                          Required="true"
+                          Style="width: 100%; margin-bottom: 10px;" />
+
+        <FluentTimePicker @bind-Value="appointmentEndTime"
+                          Label="Eindtijd"
+                          Required="true"
+                          Style="width: 100%; margin-bottom: 10px;" />
+
+        <ValidationSummary />
+
+        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
+    </EditForm>
+</FluentDialog>
+
+<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+    <h3>Weet je het zeker?</h3>
+    <p>Wil je deze afspraak verwijderen?</p>
+
+    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
+</FluentDialog>
+
+@code {
+    private List<GetAppointmentDto> appointments = new();
+    private bool dialogHidden = true;
+    private bool deleteDialogHidden = true;
+    private string dialogTitle = "";
+    private CreateAppointmentDto currentAppointment = new()
+    {
+        VisitorId = 0,
+        EmployeeId = 0,
+        CompanyId = 0,
+        AppointmentStartDate = DateTime.Now,
+        AppointmentEndDate = DateTime.Now.AddHours(1)
+    };
+    private DateTime? appointmentDate = DateTime.Today;
+    private DateTime? appointmentStartTime = DateTime.Today.AddHours(9);
+    private DateTime? appointmentEndTime = DateTime.Today.AddHours(10);
+    private bool isEditMode = false;
+    private int editAppointmentId = 0;
+    private int deleteAppointmentId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminService.CheckSession();
+        if (!AdminService.IsAdminLoggedIn)
+        {
+            Nav.NavigateTo("/");
+        }
+
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        appointments = await appointmentService.GetAppointments();
+    }
+
+    private void ShowAddDialog()
+    {
+        dialogTitle = "Nieuwe Afspraak Toevoegen";
+        isEditMode = false;
+        currentAppointment = new()
+        {
+            VisitorId = 0,
+            EmployeeId = 0,
+            CompanyId = 0,
+            AppointmentStartDate = DateTime.Now,
+            AppointmentEndDate = DateTime.Now.AddHours(1)
+        };
+        appointmentDate = DateTime.Today;
+        appointmentStartTime = DateTime.Today.AddHours(9);
+        appointmentEndTime = DateTime.Today.AddHours(10);
+        dialogHidden = false;
+    }
+
+    private void EditAppointment(GetAppointmentDto appointment)
+    {
+        dialogTitle = "Afspraak Bewerken";
+        isEditMode = true;
+        editAppointmentId = appointment.Id;
+        currentAppointment = new()
+        {
+            VisitorId = appointment.VisitorId,
+            EmployeeId = appointment.EmployeeId,
+            CompanyId = appointment.CompanyId,
+            AppointmentStartDate = appointment.AppointmentStartDate,
+            AppointmentEndDate = appointment.AppointmentEndDate
+        };
+        appointmentDate = appointment.AppointmentStartDate.Date;
+        appointmentStartTime = appointment.AppointmentStartDate;
+        appointmentEndTime = appointment.AppointmentEndDate;
+        dialogHidden = false;
+    }
+
+    private async Task SaveAppointment()
+    {
+        try
+        {
+            if (appointmentDate.HasValue && appointmentStartTime.HasValue && appointmentEndTime.HasValue)
+            {
+                currentAppointment.AppointmentStartDate = appointmentDate.Value.Date.Add(appointmentStartTime.Value.TimeOfDay);
+                currentAppointment.AppointmentEndDate = appointmentDate.Value.Date.Add(appointmentEndTime.Value.TimeOfDay);
+            }
+
+            if (isEditMode)
+            {
+                var updateDto = new UpdateAppointmentDto
+                {
+                    Id = editAppointmentId,
+                    EmployeeId = currentAppointment.EmployeeId,
+                    CompanyId = currentAppointment.CompanyId,
+                    AppointmentStartDate = currentAppointment.AppointmentStartDate,
+                    AppointmentEndDate = currentAppointment.AppointmentEndDate
+                };
+                await appointmentService.UpdateAppointment(updateDto);
+            }
+            else
+            {
+                await appointmentService.CreateAppointment(currentAppointment);
+            }
+
+            dialogHidden = true;
+            await LoadAppointments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void DeleteAppointment(int id)
+    {
+        deleteAppointmentId = id;
+        deleteDialogHidden = false;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            await appointmentService.DeleteAppointment(deleteAppointmentId);
+            deleteDialogHidden = true;
+            await LoadAppointments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void CancelDelete()
+    {
+        deleteDialogHidden = true;
+    }
+
+    private void CloseDialog()
+    {
+        dialogHidden = true;
+    }
+}
