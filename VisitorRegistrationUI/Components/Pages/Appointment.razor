@@ -11,59 +11,87 @@
 @inject AppointmentService appointmentApi
 @inject NavigationManager navManager
 
-<div class="page-grid">
+<div class="flex-container">
 
-    <div></div>
+    <FluentButton OnClick="BackToHome"
+                  IconStart="@(new Icons.Filled.Size48.ArrowCircleLeft())"
+                  Appearance="Appearance.Lightweight"
+                  Style="position: fixed; top: 10px; left: 10px; border: none; box-shadow: none; --neutral-fill-stealth-rest: transparent; color: #0078d4;">
+    </FluentButton>
+    <h2>Maak een afspraak</h2>
 
-    <div class="middle-column">
-        <h1>Maak een afspraak</h1>
+    <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
+        <FluentDialogHeader Visible="false" />
+        <h3>@DialogTitle</h3>
+        <p>@Message</p>
+        <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="GoToRegisterPage">Registreren</FluentButton>
+        <FluentButton BackgroundColor="red" Color="white" Autofocus="true" OnClick="BackToHome">Cancel</FluentButton>
+    </FluentDialog>
 
-        <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
-            <FluentDialogHeader Visible="false" />
-            <h3>@DialogTitle</h3>
-            <p>@Message</p>
-            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="GoToRegisterPage">Registreren</FluentButton>
-            <FluentButton BackgroundColor="red" Color="white" Autofocus="true" OnClick="GoToHome">Cancel</FluentButton>
-        </FluentDialog>
+    <FluentDialog @bind-Hidden="resultHidden" Style="text-align: center;">
+        <FluentDialogHeader Visible="false" />
+        <h3>@DialogTitle</h3>
+        <p>@Message</p>
+        <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="CloseResultDialog">Terug</FluentButton>
+    </FluentDialog>
 
-        <FluentDialog @bind-Hidden="resultHidden" Style="text-align: center;">
-            <FluentDialogHeader Visible="false" />
-            <h3>@DialogTitle</h3>
-            <p>@Message</p>
-            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="CloseResultDialog">Terug</FluentButton>
-        </FluentDialog>
+    @if (!visitorFound)
+    {
+        <EditForm style="border-radius: 15px;
+                                 border: 2px solid black;
+                                 padding: 30px 50px 50px 50px;
+                                 background-color: white;
+                                 max-width: 550px;
+                                 width: 100%;"
+                  Model="@emailModel"
+                  OnValidSubmit="SearchVisitorByEmail">
+            <DataAnnotationsValidator />
 
-        @if (!visitorFound)
-        {
-            <EditForm Model="@emailModel" OnValidSubmit="SearchVisitorByEmail">
-                <DataAnnotationsValidator />
+            <FluentStack Style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
 
-                <FluentStack Style="display: flex; flex-direction: column">
-                    <FluentTextField @bind-Value="emailModel.Email" Label="Vul uw e-mailadres in" Required="true" Type="email" Placeholder="john@example.com" />
+                <p class="input-fields">Vul uw e-mailadres in</p>
 
-                    <ValidationSummary style="padding-left: 15px; margin: 0px;" />
+                <FluentTextField @bind-Value="emailModel.Email"
+                                 Required="true" Type="email"
+                                 Placeholder="john@example.com" />
 
-                    <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
-                </FluentStack>
-            </EditForm>
-        }
+                <ValidationSummary style="padding-left: 15px; margin: 0px;" />
 
-        @if (visitorFound)
-        {
-            <EditForm Model="@appointmentModel" OnValidSubmit="PrepareAppointment">
-                <h3>Welkom terug @visitor?.Firstname!</h3>
+                <FluentButton Style="margin-top: 20px;
+                                             width: 100%;
+                                             height: 50px;
+                                             font-size: 18px;"
+                              Type="ButtonType.Submit"
+                              Appearance="Appearance.Accent">Submit</FluentButton>
+            </FluentStack>
+        </EditForm>
+    }
 
-                <DataAnnotationsValidator />
+    @if (visitorFound)
+    {
+        <EditForm style="border-radius: 15px;
+                         border: 2px solid black;
+                         padding: 30px 50px 50px 50px;
+                         background-color: white;
+                         max-width: 550px;
+                         width: 100%;"
+                  Model="@appointmentModel"
+                  OnValidSubmit="PrepareAppointment">
+
+            <h3 style="font-size: 24px; text-align: center; margin-bottom: 20px;">Welkom terug @visitor?.Firstname!</h3>
+
+            <DataAnnotationsValidator />
+
+            <FluentStack Style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+
+                <p class="input-field">Kies een bedrijf</p>
 
                 <FluentSelect TOption="GetCompanyDto"
-                              Label="Kies een bedrijf"
                               @bind-Value="appointmentModel.CompanyId"
                               @bind-Value:after="OnCompanyChanged"
-                              Width="275px"
-                              Height="250px">
-
-                    <FluentOption Value="" Selected="true">Kies een bedrijf...</FluentOption>
-
+                              Style="width: 100%; font-size: 16px; height: 50px; border: 2px solid black; border-radius: 5px;">
+                    
+                    <FluentOption Value="" Selected="true">Selecteer...</FluentOption>
                     @foreach (var c in companies)
                     {
                         <FluentOption Value="@c.CompanyId.ToString()">@c.CompanyName</FluentOption>
@@ -72,38 +100,42 @@
 
                 @if (!string.IsNullOrEmpty(appointmentModel.CompanyId))
                 {
+                    <p class="input-field">Kies een werknemer</p>
+
                     <FluentSelect TOption="GetEmployeeDto"
-                                  Label="Kies een werknemer"
                                   @bind-Value="appointmentModel.EmployeeId"
-                                  Width="275px"
-                                  Height="250px">
-
-                        <FluentOption Value="" Selected="true">Kies een medewerker...</FluentOption>
-
+                                  Style="width: 100%; font-size: 16px; height: 50px; border: 2px solid black; border-radius: 5px;">
+                        <FluentOption Value="" Selected="true">Selecteer...</FluentOption>
                         @foreach (var e in employees)
                         {
                             <FluentOption Value="@e.EmployeeId.ToString()">@e.FirstName @e.LastName | @e.Title</FluentOption>
                         }
-
                     </FluentSelect>
                 }
 
                 @if (!string.IsNullOrEmpty(appointmentModel.EmployeeId))
                 {
-                    <FluentDatePicker @bind-Value="appointmentModel.AppointmentDate"
-                                      Label="Kies een datum"
-                                      Placeholder="Selecteer een datum" />
+                    <p class="input-field">Kies een datum</p>
+
+                    <FluentDatePicker Culture="@(new System.Globalization.CultureInfo("nl-NL"))" 
+                                      @bind-Value="appointmentModel.AppointmentDate"
+                                      Placeholder="Selecteer een datum"
+                                      Style="width: 100%; font-size: 16px; height: 45px; border: 2px solid black; border-radius: 5px; height: 100%" />
                 }
 
                 @if (appointmentModel.AppointmentDate != null)
                 {
+                    <p class="input-field">Start tijd</p>
+
                     <FluentTimePicker @bind-Value="appointmentModel.StartTime"
-                                      Label="Starttijd"
-                                      Placeholder="Kies een starttijd" />
+                                      Placeholder="Kies een starttijd"
+                                      Style="width: 100%; font-size: 16px; height: 50px; border: 2px solid black; border-radius: 5px; height: 100%" />
+
+                    <p class="input-field">Eind tijd</p>
 
                     <FluentTimePicker @bind-Value="appointmentModel.EndTime"
-                                      Label="Eindtijd"
-                                      Placeholder="Kies een eindtijd" />
+                                      Placeholder="Kies een eindtijd"
+                                      Style="width: 100%; font-size: 16px; height: 50px; border: 2px solid black; border-radius: 5px; height: 100%" />
                 }
 
                 @if (!string.IsNullOrEmpty(dateError) || !string.IsNullOrEmpty(timeError))
@@ -124,39 +156,34 @@
 
                 @if (appointmentModel.StartTime != null && appointmentModel.EndTime != null)
                 {
-                    <div>
-                        <FluentButton Style="margin-top: 20px" Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
-                    </div>
-
+                    <FluentButton Type="ButtonType.Submit"
+                                  Appearance="Appearance.Accent"
+                                  Style="margin-top: 10px; width: 100%; height: 50px; font-size: 18px;">
+                        Volgende
+                    </FluentButton>
                 }
-            </EditForm>
+            </FluentStack>
+        </EditForm>
 
-            <FluentDialog @bind-Hidden="summaryHidden" Style="text-align: center">
-                <FluentDialogHeader Visible="false" />
+        <FluentDialog @bind-Hidden="summaryHidden" Style="text-align: center">
+            <FluentDialogHeader Visible="false" />
+            <h3>Bevestig afspraak</h3>
+            <p>Bedrijf: @companies.FirstOrDefault(c => c.CompanyId == appointment.CompanyId)?.CompanyName</p>
+            <p>
+                Werknemer: @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.FirstName
+                @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.LastName |
+                @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.Title
+            </p>
+            <p>Datum: @appointment.AppointmentStartDate.ToString("dd-MM-yyyy")</p>
+            <p>Tijd: @appointment.AppointmentStartDate.ToString("HH:mm") - @appointment.AppointmentEndDate.ToString("HH:mm")</p>
+            <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="ConfirmAppointment">Bevestigen</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="CancelSummary">Annuleren</FluentButton>
+        </FluentDialog>
+    }
 
-                <h3>Bevestig afspraak</h3>
+</div>
 
-                <p>Bedrijf: @companies.FirstOrDefault(c => c.CompanyId == appointment.CompanyId)?.CompanyName</p>
-                <p>
-                    Werknemer: @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.FirstName
-                    @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.LastName |
-                    @employees.FirstOrDefault(e => e.EmployeeId == appointment.EmployeeId)?.Title
-                </p>
-
-                <p>Datum: @appointment.AppointmentStartDate.ToString("dd-MM-yyyy")</p>
-                <p>Tijd: @appointment.AppointmentStartDate.ToString("HH:mm") - @appointment.AppointmentEndDate.ToString("HH:mm")</p>
-
-                <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="ConfirmAppointment">Bevestigen</FluentButton>
-                <FluentButton BackgroundColor="red" Color="white" OnClick="CancelSummary">Annuleren</FluentButton>
-
-            </FluentDialog>
-        }
-
-    </div>
-
-    <div>
-    </div>
-
+<div>
 </div>
 
 @code {
@@ -290,7 +317,7 @@
                 Message = "Uw afspraak is succesvol aangemaakt";
                 summaryHidden = true;
                 Hidden = false;
-                await GoToHome();
+                await BackToHome();
             }
             else
             {
@@ -323,7 +350,7 @@
         navManager.NavigateTo("/register");
     }
 
-    private async Task GoToHome()
+    private async Task BackToHome()
     {
         navManager.NavigateTo("/");
     }

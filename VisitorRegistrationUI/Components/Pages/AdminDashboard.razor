@@ -3,26 +3,61 @@
 @inject AdminService AdminService
 @inject NavigationManager Nav
 
-<FluentStack Orientation="Orientation.Horizontal" Width="100%">
-    <FluentNavMenu Width="250" Collapsible="true" Title="Menu">
-        <FluentNavLink Href="/admin/companies">
-            Bedrijven
-        </FluentNavLink>
-        <FluentNavLink Href="/admin/employees">
-            Werknemers
-        </FluentNavLink>
-        <FluentNavLink Href="/admin/visitors">
-            Bezoekers
-        </FluentNavLink>
-        <FluentNavLink Href="/admin/appointments">
-            Afspraken
-        </FluentNavLink>
-    </FluentNavMenu>
+<div class="flex-container">
 
-    <div style="width: 100%; padding: 20px;">
-        <p>Welkom bij het admin dashboard!</p>
-    </div>
-</FluentStack>
+<FluentStack style="height: 100%; width: 100%; padding: 40px; display: flex; flex-direction: column; align-items: center;">
+        <h1 style="font-size: 36px; margin-bottom: 40px;">Admin Dashboard</h1>
+
+        <div style="display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                max-width: 800px;
+                width: 100%;">
+
+            <FluentButton Style="cursor: pointer;
+                             text-align: center;
+                             border: 2px solid black;
+                             border-radius: 15px;
+                             height: 100%"
+                          OnClick="GoToCompanies">
+
+                <h2 style="font-size: 24px; margin-bottom: 10px;">📊 Bedrijven</h2>
+                <p style="color: #666;">Beheer bedrijven</p>
+            </FluentButton>
+
+            <FluentButton Style="cursor: pointer;
+                             text-align: center;
+                             border: 2px solid black;
+                             border-radius: 15px;
+                             height: 100%"
+                          OnClick="@(() => Nav.NavigateTo("/admin/employees"))">
+                <h2 style="font-size: 24px; margin-bottom: 10px;">👥 Werknemers</h2>
+                <p style="color: #666;">Beheer werknemers</p>
+            </FluentButton>
+
+            <FluentButton Style="cursor: pointer;
+                             text-align: center;
+                             border: 2px solid black;
+                             border-radius: 15px;
+                             height: 100%"
+                          OnClick="@(() => Nav.NavigateTo("/admin/visitors"))">
+                <h2 style="font-size: 24px; margin-bottom: 10px;">🚶 Bezoekers</h2>
+                <p style="color: #666;">Beheer bezoekers</p>
+            </FluentButton>
+
+            <FluentButton Style="cursor: pointer;
+                             text-align: center;
+                             border: 2px solid black;
+                             border-radius: 15px;
+                             height: 100%"
+                          OnClick="@(() => Nav.NavigateTo("/admin/appointments"))">
+                <h2 style="font-size: 24px; margin-bottom: 10px;">📅 Afspraken</h2>
+                <p style="color: #666;">Beheer afspraken</p>
+            </FluentButton>
+        </div>
+    </FluentStack>
+
+</div>
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -32,5 +67,10 @@
         {
             Nav.NavigateTo("/");
         }
+    }
+
+    private void GoToCompanies(MouseEventArgs args)
+    {
+        Nav.NavigateTo("/admin/companies");
     }
 }

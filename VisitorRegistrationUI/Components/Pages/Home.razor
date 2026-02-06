@@ -4,16 +4,32 @@
 <PageTitle>Home</PageTitle>
 
 <div class="flex-container">
-    <h1>Welkom!</h1>
+    <FluentCard Style="background-color: white;
+                   display: flex;
+                   flex-direction: column;
+                   justify-content: center;
+                   align-items: center;
+                   gap: 30px;
+                   border-radius: 15px;
+                   border: 2px solid black;
+                   padding: 50px;
+                   max-width: 700px;
+                   width: 100%;">
 
-    <FluentCard Style="background-color: #d8f5d1;
-                       display: flex;
-                       justify-content: center;
-                       align-items: center;
-                        gap: 10px;
-        ">
-        <FluentButton OnClick="GoToRegister" Appearance="Appearance.Accent">Registreren</FluentButton>
-        <FluentButton OnClick="GoToMakeAppointment" Appearance="Appearance.Accent">Maak afspraak</FluentButton>
+        <h1>Welkom!</h1>
+
+        <div style="display: flex; gap: 10px;">
+            <FluentButton Style="width: 250px; height: 100px; font-size: 22px;"
+                          OnClick="GoToRegister"
+                          Appearance="Appearance.Accent">
+                Registreren
+            </FluentButton>
+            <FluentButton Style="width: 250px; height: 100px; font-size: 22px;"
+                          OnClick="GoToMakeAppointment"
+                          Appearance="Appearance.Accent">
+                Maak afspraak
+            </FluentButton>
+        </div>
     </FluentCard>
 </div>
 
@@ -26,10 +42,5 @@
     private void GoToMakeAppointment()
     {
         navManager.NavigateTo("/appointment");
-    }
-
-    private void GoToLoginPage()
-    {
-        navManager.NavigateTo("/admin/login");
     }
 }

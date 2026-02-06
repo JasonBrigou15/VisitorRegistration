@@ -13,7 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.4.1" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.13.2" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.13.2" />
   </ItemGroup>
 
   <ItemGroup>

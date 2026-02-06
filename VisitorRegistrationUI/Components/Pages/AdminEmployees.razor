@@ -5,71 +5,82 @@
 @inject EmployeeService employeeService
 @inject NavigationManager Nav
 
-<h2>Werknemers Beheren</h2>
+<div class="flex-container">
+    <h2>Werknemers Beheren</h2>
 
-@if (employees == null)
-{
-    <p>Laden...</p>
-}
-else
-{
-    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Werknemer</FluentButton>
+    @if (employees == null)
+    {
+        <p>Laden...</p>
+    }
+    else
+    {
+        <div style="border-radius: 15px;
+                    border: 2px solid black;
+                    padding: 40px;
+                    background-color: white;
+                    max-width: 1400px;
+                    width: 100%;">
 
-    <FluentDataGrid Items="@employees.AsQueryable()" style="margin-top: 20px;">
-        <PropertyColumn Property="@(e => e.EmployeeId)" Title="ID" />
-        <PropertyColumn Property="@(e => e.FirstName)" Title="Voornaam" />
-        <PropertyColumn Property="@(e => e.LastName)" Title="Achternaam" />
-        <PropertyColumn Property="@(e => e.Title)" Title="Functie" />
-        <PropertyColumn Property="@(e => e.CompanyName)" Title="Bedrijf" />
-        <TemplateColumn Title="Acties">
-            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditEmployee(context))">Bewerken</FluentButton>
-            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteEmployee(context.EmployeeId))">Verwijderen</FluentButton>
-        </TemplateColumn>
-    </FluentDataGrid>
-}
+            <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Werknemer</FluentButton>
 
-<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
-    <FluentDialogHeader>
-        <h3>@dialogTitle</h3>
-    </FluentDialogHeader>
+            <FluentDataGrid Items="@employees.AsQueryable()" style="margin-top: 20px;">
+                <PropertyColumn Property="@(e => e.EmployeeId)" Title="ID" Class="bordered-column" />
+                <PropertyColumn Property="@(e => e.FirstName)" Title="Voornaam" Class="bordered-column" />
+                <PropertyColumn Property="@(e => e.LastName)" Title="Achternaam" Class="bordered-column" />
+                <PropertyColumn Property="@(e => e.Title)" Title="Functie" Class="bordered-column"/>
+                <PropertyColumn Property="@(e => e.CompanyName)" Title="Bedrijf" Class="bordered-column" />
+                <TemplateColumn Title="Acties" Class="bordered-column" Style="min-width: 200px;">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="@(() => EditEmployee(context))">Bewerken</FluentButton>
+                    <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteEmployee(context.EmployeeId))">Verwijderen</FluentButton>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+    }
 
-    <EditForm Model="@currentEmployee" OnValidSubmit="SaveEmployee">
-        <DataAnnotationsValidator />
+    <FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+        <FluentDialogHeader>
+            <h3>@dialogTitle</h3>
+        </FluentDialogHeader>
 
-        <FluentTextField @bind-Value="currentEmployee.FirstName"
-                         Label="Voornaam"
-                         Required="true"
-                         Style="width: 100%; margin-bottom: 10px;" />
+        <EditForm Model="@currentEmployee" OnValidSubmit="SaveEmployee">
+            <DataAnnotationsValidator />
 
-        <FluentTextField @bind-Value="currentEmployee.LastName"
-                         Label="Achternaam"
-                         Required="true"
-                         Style="width: 100%; margin-bottom: 10px;" />
+            <FluentTextField @bind-Value="currentEmployee.FirstName"
+                             Label="Voornaam"
+                             Required="true"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <FluentTextField @bind-Value="currentEmployee.Title"
-                         Label="Functie"
-                         Required="true"
-                         Style="width: 100%; margin-bottom: 10px;" />
+            <FluentTextField @bind-Value="currentEmployee.LastName"
+                             Label="Achternaam"
+                             Required="true"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <FluentNumberField @bind-Value="currentEmployee.CompanyId"
-                           Label="Bedrijf ID"
-                           Required="true"
-                           Style="width: 100%; margin-bottom: 10px;" />
+            <FluentTextField @bind-Value="currentEmployee.Title"
+                             Label="Functie"
+                             Required="true"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <ValidationSummary />
+            <FluentNumberField @bind-Value="currentEmployee.CompanyId"
+                               Label="Bedrijf ID"
+                               Required="true"
+                               Style="width: 100%; margin-bottom: 10px; border: 2px solid black; border-radius: 5px;" />
 
-        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
-        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
-    </EditForm>
-</FluentDialog>
+            <ValidationSummary />
 
-<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
-    <h3>Weet je het zeker?</h3>
-    <p>Wil je deze werknemer verwijderen?</p>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="CloseDialog">Annuleren</FluentButton>
+        </EditForm>
+    </FluentDialog>
 
-    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
-</FluentDialog>
+    <FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+        <h3>Weet je het zeker?</h3>
+        <p>Wil je deze werknemer verwijderen?</p>
+
+        <FluentButton BackgroundColor="red" Color="white" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="CancelDelete">Annuleren</FluentButton>
+    </FluentDialog>
+
+</div>
 
 @code {
     private List<GetEmployeeDto> employees = new();

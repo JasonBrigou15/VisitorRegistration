@@ -4,10 +4,16 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    font-family: Inter;
 }
 
-    .flex-container h1 {
-        font-size: 60px;
-        margin: 0;
+    .flex-container h2 {
         font-family: 'Segoe UI', Roboto, sans-serif;
+        font-weight: bold;
+        font-size: 36px;
     }
+
+::deep .bordered-column {
+    border-bottom: 2px solid black !important;
+    padding: 20px;
+}
