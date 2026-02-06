@@ -5,71 +5,82 @@
 @inject VisitorService visitorService
 @inject NavigationManager Nav
 
-<h2>Bezoekers Beheren</h2>
+<div class="flex-container">
 
-@if (visitors == null)
-{
-    <p>Laden...</p>
-}
-else
-{
-    <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Bezoeker</FluentButton>
+    <h2>Bezoekers Beheren</h2>
 
-    <FluentDataGrid Items="@visitors.AsQueryable()" style="margin-top: 20px;">
-        <PropertyColumn Property="@(v => v.Id)" Title="ID" />
-        <PropertyColumn Property="@(v => v.Firstname)" Title="Voornaam" />
-        <PropertyColumn Property="@(v => v.Lastname)" Title="Achternaam" />
-        <PropertyColumn Property="@(v => v.Email)" Title="Email" />
-        <PropertyColumn Property="@(v => v.CompanyName)" Title="Bedrijf" />
-        <TemplateColumn Title="Acties">
-            <FluentButton Appearance="Appearance.Neutral" OnClick="@(() => EditVisitor(context))">Bewerken</FluentButton>
-            <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteVisitor(context.Id))">Verwijderen</FluentButton>
-        </TemplateColumn>
-    </FluentDataGrid>
-}
+    @if (visitors == null)
+    {
+        <p>Laden...</p>
+    }
+    else
+    {
+        <div style="border-radius: 15px;
+                            border: 2px solid black;
+                            padding: 40px;
+                            background-color: white;
+                            max-width: 1400px;
+                            width: 100%;">
 
-<FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
-    <FluentDialogHeader>
-        <h3>@dialogTitle</h3>
-    </FluentDialogHeader>
+            <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Bezoeker</FluentButton>
 
-    <EditForm Model="@currentVisitor" OnValidSubmit="SaveVisitor">
-        <DataAnnotationsValidator />
+            <FluentDataGrid Items="@visitors.AsQueryable()" style="margin-top: 20px;">
+                <PropertyColumn Property="@(v => v.Id)" Title="ID" Class="bordered-column" />
+                <PropertyColumn Property="@(v => v.Firstname)" Title="Voornaam" Class="bordered-column" />
+                <PropertyColumn Property="@(v => v.Lastname)" Title="Achternaam" Class="bordered-column" />
+                <PropertyColumn Property="@(v => v.Email)" Title="Email" Class="bordered-column" />
+                <PropertyColumn Property="@(v => v.CompanyName)" Title="Bedrijf" Class="bordered-column" />
+                <TemplateColumn Title="Acties" Class="bordered-column">
+                    <FluentButton Appearance="Appearance.Accent" OnClick="@(() => EditVisitor(context))">Bewerken</FluentButton>
+                    <FluentButton BackgroundColor="red" Color="white" OnClick="@(() => DeleteVisitor(context.Id))">Verwijderen</FluentButton>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </div>
+    }
 
-        <FluentTextField @bind-Value="currentVisitor.Firstname"
-                         Label="Voornaam"
-                         Required="true"
-                         Style="width: 100%; margin-bottom: 10px;" />
+    <FluentDialog @bind-Hidden="dialogHidden" Style="text-align: center;">
+        <FluentDialogHeader>
+            <h3>@dialogTitle</h3>
+        </FluentDialogHeader>
 
-        <FluentTextField @bind-Value="currentVisitor.Lastname"
-                         Label="Achternaam"
-                         Required="true"
-                         Style="width: 100%; margin-bottom: 10px;" />
+        <EditForm Model="@currentVisitor" OnValidSubmit="SaveVisitor">
+            <DataAnnotationsValidator />
 
-        <FluentTextField @bind-Value="currentVisitor.Email"
-                         Label="Email"
-                         Required="true"
-                         Type="email"
-                         Style="width: 100%; margin-bottom: 10px;" />
+            <FluentTextField @bind-Value="currentVisitor.Firstname"
+                             Label="Voornaam"
+                             Required="true"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <FluentTextField @bind-Value="currentVisitor.CompanyName"
-                         Label="Bedrijfsnaam"
-                         Style="width: 100%; margin-bottom: 10px;" />
+            <FluentTextField @bind-Value="currentVisitor.Lastname"
+                             Label="Achternaam"
+                             Required="true"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <ValidationSummary />
+            <FluentTextField @bind-Value="currentVisitor.Email"
+                             Label="Email"
+                             Required="true"
+                             Type="email"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-        <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
-        <FluentButton Appearance="Appearance.Neutral" OnClick="CloseDialog">Annuleren</FluentButton>
-    </EditForm>
-</FluentDialog>
+            <FluentTextField @bind-Value="currentVisitor.CompanyName"
+                             Label="Bedrijfsnaam"
+                             Style="width: 100%; margin-bottom: 10px;" />
 
-<FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
-    <h3>Weet je het zeker?</h3>
-    <p>Wil je deze bezoeker verwijderen?</p>
+            <ValidationSummary />
 
-    <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
-    <FluentButton Appearance="Appearance.Neutral" OnClick="CancelDelete">Annuleren</FluentButton>
-</FluentDialog>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Opslaan</FluentButton>
+            <FluentButton BackgroundColor="red" Color="white" OnClick="CloseDialog">Annuleren</FluentButton>
+        </EditForm>
+    </FluentDialog>
+
+    <FluentDialog @bind-Hidden="deleteDialogHidden" Style="text-align: center;">
+        <h3>Weet je het zeker?</h3>
+        <p>Wil je deze bezoeker verwijderen?</p>
+
+        <FluentButton BackgroundColor="red" Color="white" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="CancelDelete">Annuleren</FluentButton>
+    </FluentDialog>
+</div>
 
 @code {
     private List<GetVisitorDto> visitors = new();

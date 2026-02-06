@@ -1,22 +1,24 @@
-﻿.page-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    font-family: Inter;
-}
-
-page-grid h1 {
-    font-weight: bold;
-}
-
-.middle-column {
+﻿.flex-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    font-family: Inter;
+}
+
+.flex-container h2 {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-weight: bold;
+    font-size: 36px;
 }
 
 .validation-box {
    background-color: yellow;
    margin: 0px;
+}
+
+.input-field {
+    font-size: 18px;
+    margin-bottom: 5px;
 }

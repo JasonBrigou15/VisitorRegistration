@@ -4,52 +4,57 @@
 @inject VisitorService Api
 @inject NavigationManager NavManager
 
-<div class="page-grid">
+<FluentButton OnClick="BackToHome"
+              IconStart="@(new Icons.Filled.Size48.ArrowCircleLeft())"
+              Appearance="Appearance.Lightweight"
+              Style="position: fixed; top: 10px; left: 10px; border: none; box-shadow: none; --neutral-fill-stealth-rest: transparent; color: #0078d4;">
+</FluentButton>
 
-    <div></div>
-
-    <FluentDialog @bind-Hidden="Hidden" Style="text-align: center;">
+<div class="flex-container">
+    <FluentDialog Style="text-align: center;" @bind-Hidden="Hidden">
         <FluentDialogHeader Visible="false" />
         <h2>@DialogTitle</h2>
         <p>@Message</p>
         <FluentButton Appearance="Appearance.Accent" Autofocus="true" OnClick="BackToHome">OK</FluentButton>
     </FluentDialog>
 
-    <div class="middle-column">
-        <h1>Vul uw gegevens in</h1>
+    <h2>Vul uw gegevens in</h2>
 
-        <EditForm Model="@registerVisitor" OnValidSubmit="SubmitRegistration" FormName="RegisterVisitorForm">
+    <EditForm style="border-radius: 15px;
+                 border: 2px solid black;
+                 padding: 30px 50px 50px 50px;
+                 background-color: white;
+                 max-width: 550px;
+                 width: 100%;"
+              Model="@registerVisitor" OnValidSubmit="SubmitRegistration" FormName="RegisterVisitorForm">
 
-            <DataAnnotationsValidator />
+        <DataAnnotationsValidator />
 
-            <FluentStack Style="display: flex; flex-direction: column;">
+        <FluentStack Style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
 
-                <p>Voornaam</p>
-                <FluentTextField @bind-Value="registerVisitor.Firstname" Placeholder="John" />
+            <p class="input-field">Voornaam</p>
+            <FluentTextField @bind-Value="registerVisitor.Firstname" Placeholder="John" />
 
-                <p>Achternaam</p>
-                <FluentTextField @bind-Value="registerVisitor.Lastname" Placeholder="Smith" />
+            <p class="input-field">Achternaam</p>
+            <FluentTextField @bind-Value="registerVisitor.Lastname" Placeholder="Smith" />
 
-                <p>Email</p>
-                <FluentTextField @bind-Value="registerVisitor.Email" Placeholder="jonh.smith@example.com" />
+            <p class="input-field">Email</p>
+            <FluentTextField @bind-Value="registerVisitor.Email" Placeholder="jonh.smith@example.com" />
 
-                <p>Bedrijf</p>
-                <FluentTextField @bind-Value="registerVisitor.CompanyName" Placeholder="Ikea" />
+            <p class="input-field">Bedrijf</p>
+            <FluentTextField @bind-Value="registerVisitor.CompanyName" Placeholder="Ikea" />
 
-                <ValidationSummary style="padding-left: 15px; margin: 0px;" />
+            <ValidationSummary style="padding-left: 15px; margin: 0px;" />
 
-                <FluentButton Type="ButtonType.Submit"
-                              Appearance="Appearance.Accent"
-                              Disabled="@isSubmitting"
-                              Style="margin-top: 20px">
-                    @(isSubmitting ? "Bezig..." : "Submit")
-                </FluentButton>
+            <FluentButton Type="ButtonType.Submit"
+                          Appearance="Appearance.Accent"
+                          Disabled="@isSubmitting"
+                          Style="margin-top: 20px; width: 100%; height: 50px; font-size: 18px;">
+                @(isSubmitting ? "Bezig..." : "Submit")
+            </FluentButton>
 
-            </FluentStack>
-        </EditForm>
-    </div>
-
-    <div></div>
+        </FluentStack>
+    </EditForm>
 
 </div>
 
