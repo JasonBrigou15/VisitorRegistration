@@ -64,6 +64,14 @@ namespace VisitorRegistrationService
 
         public async Task DeleteCompany(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("Invalid company ID");
+
+            var existingCompany = await companyRepository.GetCompanyById(id);
+
+            if (existingCompany == null)
+                throw new Exception($"Company with ID {id} not found");
+
             await companyRepository.DeleteCompany(id);
         }
     }

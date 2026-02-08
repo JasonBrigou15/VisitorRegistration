@@ -46,6 +46,7 @@ namespace VisitorRegistrationService.Dtos.Employee
                 Title = employee.Title,
                 CompanyEmailAddress = employee.CompanyEmail,
                 CompanyName = employee.Company.Name,
+                CompanyId = employee.CompanyId
             };
         }
     }

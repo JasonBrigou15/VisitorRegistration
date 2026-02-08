@@ -38,11 +38,11 @@
     @if (!visitorFound)
     {
         <EditForm style="border-radius: 15px;
-                                 border: 2px solid black;
-                                 padding: 30px 50px 50px 50px;
-                                 background-color: white;
-                                 max-width: 550px;
-                                 width: 100%;"
+                                     border: 2px solid black;
+                                     padding: 30px 50px 50px 50px;
+                                     background-color: white;
+                                     max-width: 550px;
+                                     width: 100%;"
                   Model="@emailModel"
                   OnValidSubmit="SearchVisitorByEmail">
             <DataAnnotationsValidator />
@@ -58,9 +58,9 @@
                 <ValidationSummary style="padding-left: 15px; margin: 0px;" />
 
                 <FluentButton Style="margin-top: 20px;
-                                             width: 100%;
-                                             height: 50px;
-                                             font-size: 18px;"
+                                                 width: 100%;
+                                                 height: 50px;
+                                                 font-size: 18px;"
                               Type="ButtonType.Submit"
                               Appearance="Appearance.Accent">Submit</FluentButton>
             </FluentStack>
@@ -70,11 +70,11 @@
     @if (visitorFound)
     {
         <EditForm style="border-radius: 15px;
-                         border: 2px solid black;
-                         padding: 30px 50px 50px 50px;
-                         background-color: white;
-                         max-width: 550px;
-                         width: 100%;"
+                             border: 2px solid black;
+                             padding: 30px 50px 50px 50px;
+                             background-color: white;
+                             max-width: 550px;
+                             width: 100%;"
                   Model="@appointmentModel"
                   OnValidSubmit="PrepareAppointment">
 
@@ -90,7 +90,7 @@
                               @bind-Value="appointmentModel.CompanyId"
                               @bind-Value:after="OnCompanyChanged"
                               Style="width: 100%; font-size: 16px; height: 50px; border: 2px solid black; border-radius: 5px;">
-                    
+
                     <FluentOption Value="" Selected="true">Selecteer...</FluentOption>
                     @foreach (var c in companies)
                     {
@@ -117,7 +117,7 @@
                 {
                     <p class="input-field">Kies een datum</p>
 
-                    <FluentDatePicker Culture="@(new System.Globalization.CultureInfo("nl-NL"))" 
+                    <FluentDatePicker Culture="@(new System.Globalization.CultureInfo("nl-NL"))"
                                       @bind-Value="appointmentModel.AppointmentDate"
                                       Placeholder="Selecteer een datum"
                                       Style="width: 100%; font-size: 16px; height: 45px; border: 2px solid black; border-radius: 5px; height: 100%" />
@@ -239,7 +239,20 @@
 
     private async Task LoadCompanies()
     {
-        companies = await companyApi.GetCompanies();
+        var allCompanies = await companyApi.GetCompanies();
+
+        var companiesWithEmployees = new List<GetCompanyDto>();
+
+        foreach (var company in allCompanies)
+        {
+            var employees = await employeeApi.GetEmployeesByCompany(company.CompanyId);
+            if (employees.Any())
+            {
+                companiesWithEmployees.Add(company);
+            }
+        }
+
+        companies = companiesWithEmployees;
     }
 
     private async Task LoadEmployeesBasedOnCompany(string companyId)
@@ -260,8 +273,26 @@
 
     private bool ValidateDateLogic()
     {
-        if (appointmentModel.AppointmentDate == null || appointmentModel.StartTime == null || appointmentModel.EndTime == null)
+        dateError = "";
+        timeError = "";
+
+        if (appointmentModel.AppointmentDate == null)
+        {
+            dateError = "Selecteer een datum";
             return false;
+        }
+
+        if (appointmentModel.StartTime == null || appointmentModel.StartTime.Value.TimeOfDay == TimeSpan.Zero)
+        {
+            timeError = "Selecteer een starttijd";
+            return false;
+        }
+
+        if (appointmentModel.EndTime == null || appointmentModel.EndTime.Value.TimeOfDay == TimeSpan.Zero)
+        {
+            timeError = "Selecteer een eindtijd";
+            return false;
+        }
 
         var start = appointmentModel.AppointmentDate.Value.Date + appointmentModel.StartTime.Value.TimeOfDay;
 

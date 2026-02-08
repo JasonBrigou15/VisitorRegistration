@@ -8,5 +8,6 @@
 
         public int EmployeeId { get; set; }
         public int CompanyId { get; set; }
+        public int VisitorId { get; set; }
     }
 }

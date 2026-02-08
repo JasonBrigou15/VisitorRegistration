@@ -42,6 +42,7 @@ namespace VisitorRegistrationService.Dtos.Appointments
         {
             appointment.AppointmentStartDate = updateAppointmentDto.AppointmentStartDate;
             appointment.AppointmentEndDate = updateAppointmentDto.AppointmentEndDate;
+            appointment.VisitorId = updateAppointmentDto.VisitorId;
             appointment.EmployeeId = updateAppointmentDto.EmployeeId;
             appointment.CompanyId = updateAppointmentDto.CompanyId;
             appointment.Company = company;
