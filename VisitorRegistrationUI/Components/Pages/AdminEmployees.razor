@@ -1,8 +1,10 @@
 ﻿@page "/admin/employees"
+@using VisitorRegistrationShared.Dtos.Company
 @using VisitorRegistrationShared.Dtos.Employee
 @using VisitorRegistrationUI.Services
 @inject VisitorRegistrationUI.Services.AdminService AdminService
 @inject EmployeeService employeeService
+@inject CompanyService companyService
 @inject NavigationManager Nav
 
 <div class="flex-container">
@@ -15,11 +17,11 @@
     else
     {
         <div style="border-radius: 15px;
-                    border: 2px solid black;
-                    padding: 40px;
-                    background-color: white;
-                    max-width: 1400px;
-                    width: 100%;">
+                            border: 2px solid black;
+                            padding: 40px;
+                            background-color: white;
+                            max-width: 1400px;
+                            width: 100%;">
 
             <FluentButton Appearance="Appearance.Accent" OnClick="ShowAddDialog">Nieuwe Werknemer</FluentButton>
 
@@ -27,7 +29,7 @@
                 <PropertyColumn Property="@(e => e.EmployeeId)" Title="ID" Class="bordered-column" />
                 <PropertyColumn Property="@(e => e.FirstName)" Title="Voornaam" Class="bordered-column" />
                 <PropertyColumn Property="@(e => e.LastName)" Title="Achternaam" Class="bordered-column" />
-                <PropertyColumn Property="@(e => e.Title)" Title="Functie" Class="bordered-column"/>
+                <PropertyColumn Property="@(e => e.Title)" Title="Functie" Class="bordered-column" />
                 <PropertyColumn Property="@(e => e.CompanyName)" Title="Bedrijf" Class="bordered-column" />
                 <TemplateColumn Title="Acties" Class="bordered-column" Style="min-width: 200px;">
                     <FluentButton Appearance="Appearance.Accent" OnClick="@(() => EditEmployee(context))">Bewerken</FluentButton>
@@ -60,10 +62,18 @@
                              Required="true"
                              Style="width: 100%; margin-bottom: 10px;" />
 
-            <FluentNumberField @bind-Value="currentEmployee.CompanyId"
-                               Label="Bedrijf ID"
-                               Required="true"
-                               Style="width: 100%; margin-bottom: 10px; border: 2px solid black; border-radius: 5px;" />
+            <FluentSelect TOption="string"
+                          @bind-Value="selectedCompanyId"
+                          Label="Bedrijf"
+                          Style="width: 100%; margin-bottom: 10px; border: 2px solid black">
+                <FluentOption Value="0">-- Selecteer een bedrijf --</FluentOption>
+
+                @foreach (var company in companies)
+                {
+                    <FluentOption Value="@company.CompanyId.ToString()">@company.CompanyName</FluentOption>
+                }
+
+            </FluentSelect>
 
             <ValidationSummary />
 
@@ -79,15 +89,16 @@
         <FluentButton BackgroundColor="red" Color="white" OnClick="ConfirmDelete">Ja, verwijderen</FluentButton>
         <FluentButton Appearance="Appearance.Accent" OnClick="CancelDelete">Annuleren</FluentButton>
     </FluentDialog>
-
 </div>
 
 @code {
     private List<GetEmployeeDto> employees = new();
+    private List<GetCompanyDto> companies = new();
     private bool dialogHidden = true;
     private bool deleteDialogHidden = true;
     private string dialogTitle = "";
     private CreateEmployeeDto currentEmployee = new() { FirstName = "", LastName = "", Title = "", CompanyId = 0 };
+    private string selectedCompanyId = "0";
     private bool isEditMode = false;
     private int editEmployeeId = 0;
     private int deleteEmployeeId = 0;
@@ -101,6 +112,7 @@
         }
 
         await LoadEmployees();
+        await LoadCompanies();
     }
 
     private async Task LoadEmployees()
@@ -108,11 +120,17 @@
         employees = await employeeService.GetEmployees();
     }
 
+    private async Task LoadCompanies()
+    {
+        companies = await companyService.GetCompanies();
+    }
+
     private void ShowAddDialog()
     {
         dialogTitle = "Nieuwe Werknemer Toevoegen";
         isEditMode = false;
         currentEmployee = new() { FirstName = "", LastName = "", Title = "", CompanyId = 0 };
+        selectedCompanyId = "0";
         dialogHidden = false;
     }
 
@@ -125,8 +143,11 @@
         {
             FirstName = employee.FirstName,
             LastName = employee.LastName,
-            Title = employee.Title
+            Title = employee.Title,
+            CompanyEmail = employee.CompanyEmail
         };
+        selectedCompanyId = employee.CompanyId.ToString();
+        currentEmployee.CompanyId = employee.CompanyId;
         dialogHidden = false;
     }
 
@@ -134,15 +155,25 @@
     {
         try
         {
+            currentEmployee.CompanyId = int.Parse(selectedCompanyId);
+
             if (isEditMode)
             {
+                var company = companies.FirstOrDefault(c => c.CompanyId == currentEmployee.CompanyId);
+
                 var updateDto = new UpdateEmployeeDto
                 {
                     Id = editEmployeeId,
                     FirstName = currentEmployee.FirstName,
                     LastName = currentEmployee.LastName,
                     Title = currentEmployee.Title,
-                    CompanyId = currentEmployee.CompanyId
+                    CompanyId = currentEmployee.CompanyId,
+                    CompanyEmail = VisitorRegistrationShared.Extensions.StringExtensions.ToEmailAddress(
+                    currentEmployee.FirstName,
+                    currentEmployee.LastName,
+                    currentEmployee.Title,
+                    company?.CompanyName ?? ""
+                    )
                 };
                 await employeeService.UpdateEmployee(updateDto);
             }
@@ -154,9 +185,9 @@
             dialogHidden = true;
             await LoadEmployees();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine(ex.Message);
+            dialogHidden = true;
         }
     }
 

@@ -12,6 +12,8 @@
 
         public int? CompanyId { get; set; }
 
+        public string? CompanyName { get; set; }
+
         public Company? Company { get; set; }
 
         public bool IsDeleted { get; set; } = false;

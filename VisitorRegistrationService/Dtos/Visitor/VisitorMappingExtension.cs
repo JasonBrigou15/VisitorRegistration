@@ -12,7 +12,7 @@ namespace VisitorRegistrationService.Dtos.Visitor
                 Firstname = visitor.Firstname,
                 Lastname = visitor.Lastname,
                 Email = visitor.Email,
-                CompanyName = visitor.Company?.Name ?? string.Empty,
+                CompanyName = visitor.CompanyName ?? visitor.Company?.Name ?? string.Empty,
             };
         }
 
@@ -24,6 +24,7 @@ namespace VisitorRegistrationService.Dtos.Visitor
                 Firstname = createVisitorDto.Firstname,
                 Lastname = createVisitorDto.Lastname,
                 Email = createVisitorDto.Email,
+                CompanyName = createVisitorDto.CompanyName,
                 CompanyId = company?.Id,
                 Company = company
             };
@@ -37,6 +38,7 @@ namespace VisitorRegistrationService.Dtos.Visitor
             visitor.Firstname = updateVisitorDto.Firstname;
             visitor.Lastname = updateVisitorDto.Lastname;
             visitor.Email = updateVisitorDto.Email;
+            visitor.CompanyName = updateVisitorDto.CompanyName;
 
             if (company != null)
             {

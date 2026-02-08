@@ -97,7 +97,12 @@ namespace VisitorRegistrationService
         public async Task DeleteVisitor(int id)
         {
             if (id <= 0)
-                throw new Exception("Invalid visitor ID");
+                throw new ArgumentException("Invalid visitor ID");
+
+            var existingVisitor = await visitorRepository.GetVisitorById(id);
+
+            if (existingVisitor == null)
+                throw new Exception($"Visitor with ID {id} not found");
 
             await visitorRepository.DeleteVisitor(id);
         }

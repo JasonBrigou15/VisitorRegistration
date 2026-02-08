@@ -60,29 +60,39 @@ namespace VisitorRegistrationService
         public async Task UpdateEmployee(UpdateEmployeeDto updateEmployeeDto)
         {
             var validationResult = await this.updateEmployeeDto.ValidateAsync(updateEmployeeDto);
-
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
             var existingEmployee = await employeeRepository.GetEmployeeById(updateEmployeeDto.Id);
-
             if (existingEmployee == null)
                 throw new Exception($"Employee with ID {updateEmployeeDto.Id} not found");
 
-            var company = await companyRepository.GetCompanyById(updateEmployeeDto.CompanyId);
+            Console.WriteLine($"Checking email: {updateEmployeeDto.CompanyEmail}");  // ADD THIS
 
+            var employeeWithSameEmail = await employeeRepository.GetEmployeeByEmail(updateEmployeeDto.CompanyEmail);
+
+            Console.WriteLine($"Found employee: {employeeWithSameEmail?.Id}, Current ID: {updateEmployeeDto.Id}");  // ADD THIS
+
+            if (employeeWithSameEmail != null && employeeWithSameEmail.Id != updateEmployeeDto.Id)
+                throw new ValidationException("An employee with this email already exists");
+
+            var company = await companyRepository.GetCompanyById(updateEmployeeDto.CompanyId);
             if (company == null)
                 throw new Exception($"Company with ID {updateEmployeeDto.CompanyId} not found");
 
             updateEmployeeDto.UpdateDtoToEntity(existingEmployee, company);
-
             await employeeRepository.UpdateEmployee(existingEmployee);
         }
 
         public async Task DeleteEmployee(int id)
         {
-            if (id < 0)
-                throw new Exception("Invalid employee ID");
+            if (id <= 0)
+                throw new ArgumentException("Invalid employee ID");
+
+            var existingEmployee = await employeeRepository.GetEmployeeById(id);
+
+            if (existingEmployee == null)
+                throw new Exception($"Employee with ID {id} not found");
 
             await employeeRepository.DeleteEmployee(id);
         }
