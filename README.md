@@ -73,7 +73,7 @@ VisitorRegistration/
 
 1. Clone the repository
 ```bash
-git clone [https://github.com/JasonBrigou15/VisitorRegistration]
+git clone https://github.com/JasonBrigou15/VisitorRegistration
 ```
 
 2. Update connection string in `appsettings.json`
@@ -127,7 +127,7 @@ This project was originally built during my 6-week internship at Oncore in Kortr
 
 ## Contact
 
-**Jason** - [https://www.linkedin.com/in/jason-brigou-a24b12305/] - [jason.brigou@gmail.com]
+**Jason** - https://www.linkedin.com/in/jason-brigou-a24b12305/ - jason.brigou@gmail.com
 
 ---
 
